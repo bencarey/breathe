@@ -255,27 +255,62 @@ const Snd = {
     });
     const lfo = ctx.createOscillator(); lfo.frequency.value = 0.05; const lg = ctx.createGain(); lg.gain.value = 160; lfo.connect(lg); lg.connect(lp.frequency); lfo.start(); nodes.push(lfo);
     this.pad = { padGain, nodes };
+
+    // breath voice: looping noise shaped by a sweeping band -> an audible breath
+    // that swells on the inhale and falls on the exhale (Open-style guide).
+    const src = ctx.createBufferSource(); src.buffer = this._noise(); src.loop = true;
+    const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 800; bp.Q.value = 0.9;
+    const tame = ctx.createBiquadFilter(); tame.type = "lowpass"; tame.frequency.value = 3400; // cut harsh hiss
+    const bg = ctx.createGain(); bg.gain.value = 0.0001;
+    src.connect(bp); bp.connect(tame); tame.connect(bg); bg.connect(this.master);
+    const bsend = ctx.createGain(); bsend.gain.value = 0.25; bg.connect(bsend); bsend.connect(this.reverb);
+    src.start();
+    this.breathV = { src, filter: bp, gain: bg };
   },
   stopAmbient() {
-    if (!this.pad || !this.ctx) return; const { padGain, nodes } = this.pad, t = this.ctx.currentTime;
-    try { padGain.gain.cancelScheduledValues(t); padGain.gain.setValueAtTime(padGain.gain.value, t); padGain.gain.linearRampToValueAtTime(0, t + 2.5); } catch {}
-    nodes.forEach((o) => { try { o.stop(t + 2.6); } catch {} });
-    this.pad = null;
+    const t = this.ctx ? this.ctx.currentTime : 0;
+    if (this.pad && this.ctx) {
+      const { padGain, nodes } = this.pad;
+      try { padGain.gain.cancelScheduledValues(t); padGain.gain.setValueAtTime(padGain.gain.value, t); padGain.gain.linearRampToValueAtTime(0, t + 2.5); } catch {}
+      nodes.forEach((o) => { try { o.stop(t + 2.6); } catch {} });
+      this.pad = null;
+    }
+    if (this.breathV && this.ctx) {
+      const { src, gain } = this.breathV;
+      try { gain.gain.cancelScheduledValues(t); gain.gain.setValueAtTime(Math.max(0.0001, gain.gain.value), t); gain.gain.linearRampToValueAtTime(0.0001, t + 0.6); } catch {}
+      try { src.stop(t + 0.7); } catch {}
+      this.breathV = null;
+    }
   },
-  cue(type) {
-    const s = this.scale;
-    if (type === "inhale") this.chime([s[2], s[3], s[4]]);          // rising shimmer
-    else if (type === "exhale") this.bowl(s[0], 5.5, 0.15);          // low warm bowl
-    else if (type === "topup") this.chime([s[5]], 0.05);
-    /* hold: rest in the reverb wash */
+  _noise() {
+    if (this._nb) return this._nb;
+    const ctx = this.ctx, len = Math.floor(ctx.sampleRate * 2), b = ctx.createBuffer(1, len, ctx.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    this._nb = b; return b;
+  },
+  // shape the breath voice over a phase: type = first word of the label, secs = duration
+  breath(type, secs) {
+    if (!store.sound || !this.ctx || !this.breathV) return;
+    const t = this.ctx.currentTime, g = this.breathV.gain.gain, f = this.breathV.filter.frequency;
+    const safe = Math.max(0.0001, g.value);
+    try { g.cancelScheduledValues(t); f.cancelScheduledValues(t); g.setValueAtTime(safe, t); f.setValueAtTime(f.value, t); } catch {}
+    if (type === "Inhale") {                 // swell in, brighten
+      g.linearRampToValueAtTime(0.42, t + secs * 0.55);
+      g.linearRampToValueAtTime(0.06, t + secs);
+      f.setValueAtTime(560, t); f.exponentialRampToValueAtTime(1900, t + secs);
+    } else if (type === "Top-up") {          // quick bright sip
+      g.linearRampToValueAtTime(0.5, t + Math.min(0.28, secs * 0.45));
+      g.linearRampToValueAtTime(0.04, t + secs);
+      f.setValueAtTime(1500, t); f.exponentialRampToValueAtTime(2400, t + secs);
+    } else if (type === "Exhale") {          // long sighing release, darken
+      g.linearRampToValueAtTime(0.38, t + secs * 0.28);
+      g.linearRampToValueAtTime(0.0001, t + secs);
+      f.setValueAtTime(1300, t); f.exponentialRampToValueAtTime(360, t + secs);
+    } else {                                 // Hold: breath suspended
+      g.linearRampToValueAtTime(0.0001, t + Math.min(0.6, secs * 0.3));
+    }
   },
   complete() { this.bowl(this.scale[2], 6.5, 0.2); setTimeout(() => this.chime([this.scale[2], this.scale[3], this.scale[4], this.scale[5]], 0.08), 450); },
-};
-const CUE = {
-  Inhale: () => Snd.cue("inhale"),
-  "Top-up": () => Snd.cue("topup"),
-  Exhale: () => Snd.cue("exhale"),
-  Hold: () => Snd.cue("hold"),
 };
 
 /* full screen: works on desktop + Android (must be inside a user gesture). iOS
@@ -638,7 +673,7 @@ function startSession(patternId, value) {
       session.lastKey = key;
       phaseEl.textContent = ph.label === "Top-up" ? "Top up" : ph.label;
       ringsBox.classList.toggle("holding", ph.label === "Hold");
-      if (ph.secs >= 1.8) CUE[ph.label.split(" ")[0]]?.(); // skip bowls/chimes on very fast paces (e.g. Breath of Fire) — pad carries it
+      Snd.breath(ph.label.split(" ")[0], ph.secs); // audible breath that follows the pace (in, out, sip, sigh)
       haptic(1);
     }
     paint(ph.from, ph.to, ph.secs ? into / ph.secs : 1);
