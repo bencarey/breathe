@@ -5,10 +5,11 @@ iPhone home screen. Inspired by the Stoic and Walden design language.
 
 No build step, no dependencies. Plain HTML + CSS + a single JS module.
 
-A warm Eames / Maeda remix over a calm monochrome core: paper-warm chrome,
-playful geometric icon marks, and a session that blooms into each pattern's
-identity color with rippling concentric rings (in the spirit of the orange /
-electric-blue / black breathing references).
+Quiet modern minimalism — a Japandi / wabi-sabi remix: warm rice-paper ground,
+an elegant serif (Instrument Serif) reserved for the few display moments over a
+light grotesque, a whisper of paper grain, restrained geometric icon marks, and
+a session that blooms into each pattern's muted natural color with delicate
+rippling concentric rings. Influences: Japandi, wabi-sabi, Eames, Maeda, Mies.
 
 ## Features
 - Eight research-backed patterns, each with its own identity color:

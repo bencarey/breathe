@@ -58,43 +58,43 @@ const UI = {
    labels: Inhale | Exhale | Hold | Top-up. unit: 'min' (timed) | 'breaths' (cycles).
    See breathe-pattern-spec for sourcing (HeartMath, Weil, Huberman, Breathwrk). */
 const PATTERNS = [
-  { id: "energy", name: "Energy", technique: "Energizing breath", group: "morning", icon: "energy", color: "#ec5a2e",
+  { id: "energy", name: "Energy", technique: "Energizing breath", group: "morning", icon: "energy", color: "#bc6446",
     desc: "A longer inhale to lift energy and alertness.",
     guidance: "Breathe in longer than you breathe out to raise alertness. Sit upright, and ease off if you feel light-headed.",
     caveat: "Best seated or lying down. Skip if pregnant or prone to dizziness.",
     phases: [["Inhale", 4], ["Exhale", 2]], unit: "min", options: [1, 2, 3], default: 2 },
 
-  { id: "creativity", name: "Creativity", technique: "Open awareness", group: "morning", icon: "creativity", color: "#2e27e6",
+  { id: "creativity", name: "Creativity", technique: "Open awareness", group: "morning", icon: "creativity", color: "#47557e",
     desc: "A spacious, even rhythm to open the mind.",
     guidance: "An even, spacious rhythm with gentle pauses. Let the mind wander and make connections.",
     phases: [["Inhale", 4], ["Hold", 2], ["Exhale", 6], ["Hold", 2]], unit: "min", options: [2, 4, 6], default: 4 },
 
-  { id: "balance", name: "Balance", technique: "Coherence · 5.5 bpm", group: "anytime", icon: "balance", color: "#1f8e7d",
+  { id: "balance", name: "Balance", technique: "Coherence · 5.5 bpm", group: "anytime", icon: "balance", color: "#6e8a6f",
     desc: "Resonant breathing for calm, steady balance.",
     guidance: "Smooth and even, with no holds. Equal in and out at the body's resonant pace settles the nervous system and lifts heart-rate variability.",
     phases: [["Inhale", 5.5], ["Exhale", 5.5]], unit: "min", options: [2, 5, 10], default: 5 },
 
-  { id: "focus", name: "Focus", technique: "Box breathing · 4-4-4-4", group: "anytime", icon: "focus", color: "#16161a",
+  { id: "focus", name: "Focus", technique: "Box breathing · 4-4-4-4", group: "anytime", icon: "focus", color: "#2e2b27",
     desc: "Equal box breathing to steady attention.",
     guidance: "Equal counts on all four sides of the box. Keep the holds relaxed, never strained.",
     phases: [["Inhale", 4], ["Hold", 4], ["Exhale", 4], ["Hold", 4]], unit: "min", options: [2, 4, 8], default: 4 },
 
-  { id: "unwind", name: "Unwind", technique: "Extended exhale · 4-6", group: "anytime", icon: "unwind", color: "#c2562f",
+  { id: "unwind", name: "Unwind", technique: "Extended exhale · 4-6", group: "anytime", icon: "unwind", color: "#a66b53",
     desc: "A longer exhale to gently let go.",
     guidance: "Let the out-breath be longer than the in-breath. Soften the jaw and shoulders as you exhale.",
     phases: [["Inhale", 4], ["Exhale", 6]], unit: "min", options: [2, 5, 10], default: 5 },
 
-  { id: "reset", name: "Reset", technique: "Physiological sigh", group: "anytime", icon: "reset", color: "#2f8fb0",
+  { id: "reset", name: "Reset", technique: "Physiological sigh", group: "anytime", icon: "reset", color: "#5c7e80",
     desc: "A double inhale and long exhale to reset fast.",
     guidance: "Inhale fully through the nose, then sip in a little more air, then a long, slow exhale through the mouth.",
     phases: [["Inhale", 2, 0.8], ["Top-up", 1, 1], ["Exhale", 6, 0.42]], unit: "min", options: [1, 3, 5], default: 3 },
 
-  { id: "calm", name: "Calm", technique: "4-7-8 breath", group: "evening", icon: "calm", color: "#6a4a8c",
+  { id: "calm", name: "Calm", technique: "4-7-8 breath", group: "evening", icon: "calm", color: "#6b5a74",
     desc: "Dr. Weil's relaxing breath for stress and sleep.",
     guidance: "Inhale quietly through the nose for four, hold for seven, then exhale through the mouth with a soft whoosh for eight. Four breaths is one round.",
     phases: [["Inhale", 4], ["Hold", 7], ["Exhale", 8]], unit: "breaths", options: [4, 8], default: 4 },
 
-  { id: "sleep", name: "Sleep", technique: "Wind-down", group: "evening", icon: "sleep", color: "#2b2e6e",
+  { id: "sleep", name: "Sleep", technique: "Wind-down", group: "evening", icon: "sleep", color: "#3a3f57",
     desc: "A strong exhale bias to drift toward rest.",
     guidance: "A long, slow exhale carries you toward sleep. Keep everything loose and let go.",
     phases: [["Inhale", 4], ["Hold", 2], ["Exhale", 8]], unit: "min", options: [3, 5, 10], default: 5 },
