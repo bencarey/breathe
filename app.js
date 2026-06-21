@@ -193,11 +193,12 @@ const Snd = {
     if (!C) return null;
     const ctx = new C();
     this.ctx = ctx;
-    const master = ctx.createGain(); master.gain.value = 0.85;
+    const master = ctx.createGain(); master.gain.value = 0.45; // ~half volume
+    const mute = ctx.createGain(); mute.gain.value = store.sound ? 1 : 0; // hard kill switch for EVERYTHING
     const lim = ctx.createDynamicsCompressor();
     lim.threshold.value = -7; lim.ratio.value = 12; lim.attack.value = 0.004; lim.release.value = 0.25;
-    master.connect(lim); lim.connect(ctx.destination);
-    this.master = master;
+    master.connect(mute); mute.connect(lim); lim.connect(ctx.destination);
+    this.master = master; this.muteGain = mute;
     // simple convolution reverb (decaying-noise impulse) for space
     const dur = 2.8, len = Math.floor(ctx.sampleRate * dur), ir = ctx.createBuffer(2, len, ctx.sampleRate);
     for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.4); }
@@ -210,7 +211,13 @@ const Snd = {
     if (!store.sound) return;
     const ctx = this.ensure(); if (!ctx) return;
     if (ctx.state === "suspended") ctx.resume();
+    this.applyMute();
     try { const b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource(); s.buffer = b; s.connect(ctx.destination); s.start(0); } catch {}
+  },
+  applyMute() { // ramp the master kill switch to follow store.sound — silences ALL sound
+    if (!this.muteGain || !this.ctx) return;
+    const t = this.ctx.currentTime, g = this.muteGain.gain;
+    try { g.cancelScheduledValues(t); g.setValueAtTime(g.value, t); g.linearRampToValueAtTime(store.sound ? 1 : 0, t + 0.08); } catch {}
   },
   // a struck singing bowl: inharmonic partials + beating + long decay
   bowl(freq, dur = 5, gain = 0.16) {
@@ -231,18 +238,26 @@ const Snd = {
       });
     });
   },
-  // koshi-style chime: a quick gentle cluster of bell tones
-  chime(notes, gain = 0.07) {
+  // koshi-style chime: a gentle cluster of bell tones. mul = octave brightness,
+  // atk = onset softness (raise to take the "stark" edge off).
+  chime(notes, gain = 0.06, mul = 2, atk = 0.006) {
     if (!store.sound) return; const ctx = this.ensure(); if (!ctx) return;
     const base = ctx.currentTime;
     notes.forEach((f, i) => {
-      const t = base + i * 0.085, dur = 2.4;
-      [[2, "triangle", gain], [2 * 2.76, "sine", gain * 0.3]].forEach(([mul, type, gn]) => {
-        const o = ctx.createOscillator(); o.type = type; o.frequency.value = f * mul;
-        const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gn, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      const t = base + i * 0.1, dur = 2.4;
+      [[mul, "triangle", gain], [mul * 2.76, "sine", gain * 0.28]].forEach(([m, type, gn]) => {
+        const o = ctx.createOscillator(); o.type = type; o.frequency.value = f * m;
+        const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gn, t + atk); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
         o.connect(g); g.connect(this.master); g.connect(this.reverb); o.start(t); o.stop(t + dur + 0.05);
       });
     });
+  },
+  // soft per-breath accent layered under the breath voice (the chimes, kept gentle)
+  accent(base) {
+    const s = this.scale;
+    if (base === "Inhale") this.chime([s[1], s[3]], 0.035, 1.5, 0.03); // lower, quieter, soft onset (no longer stark)
+    else if (base === "Exhale") this.bowl(s[0], 5, 0.09);              // warm low bowl
+    else if (base === "Top-up") this.chime([s[4]], 0.03, 2, 0.012);
   },
   startAmbient() {
     if (!store.sound) return; const ctx = this.ensure(); if (!ctx || this.pad) return;
@@ -295,15 +310,15 @@ const Snd = {
     const safe = Math.max(0.0001, g.value);
     try { g.cancelScheduledValues(t); f.cancelScheduledValues(t); g.setValueAtTime(safe, t); f.setValueAtTime(f.value, t); } catch {}
     if (type === "Inhale") {                 // swell in, brighten
-      g.linearRampToValueAtTime(0.42, t + secs * 0.55);
-      g.linearRampToValueAtTime(0.06, t + secs);
+      g.linearRampToValueAtTime(0.6, t + secs * 0.55);
+      g.linearRampToValueAtTime(0.08, t + secs);
       f.setValueAtTime(560, t); f.exponentialRampToValueAtTime(1900, t + secs);
     } else if (type === "Top-up") {          // quick bright sip
-      g.linearRampToValueAtTime(0.5, t + Math.min(0.28, secs * 0.45));
-      g.linearRampToValueAtTime(0.04, t + secs);
+      g.linearRampToValueAtTime(0.7, t + Math.min(0.28, secs * 0.45));
+      g.linearRampToValueAtTime(0.05, t + secs);
       f.setValueAtTime(1500, t); f.exponentialRampToValueAtTime(2400, t + secs);
     } else if (type === "Exhale") {          // long sighing release, darken
-      g.linearRampToValueAtTime(0.38, t + secs * 0.28);
+      g.linearRampToValueAtTime(0.54, t + secs * 0.28);
       g.linearRampToValueAtTime(0.0001, t + secs);
       f.setValueAtTime(1300, t); f.exponentialRampToValueAtTime(360, t + secs);
     } else {                                 // Hold: breath suspended
@@ -561,7 +576,8 @@ function openSheet(patternId) {
     store.sound = !store.sound;
     scrim.querySelector(".switch").setAttribute("aria-checked", store.sound);
     scrim.querySelector("#sndlabel").textContent = store.sound ? "Sound & haptics on" : "Sound & haptics off";
-    if (store.sound) { Snd.unlock(); Snd.chime([Snd.scale[3]], 0.06); haptic(1); }
+    if (store.sound) { Snd.unlock(); Snd.chime([Snd.scale[1], Snd.scale[3]], 0.035, 1.5, 0.03); haptic(1); }
+    else Snd.applyMute();
   });
 
   scrim.querySelector(".sheet__begin").addEventListener("click", () => {
@@ -673,7 +689,9 @@ function startSession(patternId, value) {
       session.lastKey = key;
       phaseEl.textContent = ph.label === "Top-up" ? "Top up" : ph.label;
       ringsBox.classList.toggle("holding", ph.label === "Hold");
-      Snd.breath(ph.label.split(" ")[0], ph.secs); // audible breath that follows the pace (in, out, sip, sigh)
+      const base = ph.label.split(" ")[0];
+      Snd.breath(base, ph.secs);             // audible breath that follows the pace (in, out, sip, sigh)
+      if (ph.secs >= 1.8) Snd.accent(base);  // soft chime/bowl on top (skip on very fast paces)
       haptic(1);
     }
     paint(ph.from, ph.to, ph.secs ? into / ph.secs : 1);
@@ -702,7 +720,12 @@ function startSession(patternId, value) {
   }, 1000);
 
   el.querySelector("[data-close]").addEventListener("click", () => endSession(el));
-  el.querySelector("[data-sound]").addEventListener("click", (e) => { store.sound = !store.sound; e.currentTarget.innerHTML = store.sound ? UI.sound : UI.soundOff; });
+  el.querySelector("[data-sound]").addEventListener("click", (e) => {
+    store.sound = !store.sound;
+    e.currentTarget.innerHTML = store.sound ? UI.sound : UI.soundOff;
+    if (store.sound) { Snd.unlock(); Snd.startAmbient(); } // restart the bed/breath if it was started muted
+    else Snd.applyMute();                                  // hard-silence everything still ringing
+  });
   pauseBtn.addEventListener("click", () => {
     if (!session || !session.t0) return; // ignore during ready countdown
     session.paused = !session.paused;
