@@ -11,12 +11,24 @@ identity color with rippling concentric rings (in the spirit of the orange /
 electric-blue / black breathing references).
 
 ## Features
-- Seven guided patterns, each with its own identity color: Energy (orange),
-  Creativity (blue), Calm (teal), Focus (black), Balance (gold), Ground
-  (terracotta), Sleep (indigo)
-- Immersive session that floods to the pattern's color with staggered,
-  rippling concentric rings pacing inhale / hold / exhale
+- Eight research-backed patterns, each with its own identity color:
+  - **Energy** — energizing, inhale-biased 4-2 (with a safety note)
+  - **Creativity** — open awareness 4-2-6-2
+  - **Balance** — coherent / resonant breathing, 5.5 in / 5.5 out (~5.5 bpm)
+  - **Focus** — box breathing 4-4-4-4
+  - **Unwind** — extended exhale 4-6
+  - **Reset** — physiological sigh (double inhale + long exhale)
+  - **Calm** — 4-7-8 (Dr. Weil), counted in breaths (4 or 8), not minutes
+  - **Sleep** — wind-down 4-2-8
+- Pacing is exact: one elapsed-time clock drives the ring scale, the count, and
+  the phase together with an easeInOutSine curve, so the motion tracks the
+  breath cue with no lag, drift, or snapping. Holds show a gentle shimmer.
+- Immersive session that floods to the pattern's color with rippling concentric
+  rings pacing inhale / hold / exhale
 - Optional soft audio tones + haptics that cue each phase
+
+Timings are sourced from breathwork research (HeartMath resonance, Dr. Weil's
+4-7-8, Huberman's physiological sigh, Breathwrk/Calm conventions).
 - 1 / 2 / 4 minute durations
 - Streaks, total minutes, session history (stored locally on device)
 - Works fully offline once installed (service worker)

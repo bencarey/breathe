@@ -199,7 +199,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .sheet__hero svg { width: 44px; height: 44px; }
 .sheet__eyebrow { text-align: center; }
 .sheet__title { text-align: center; font-size: 2.1rem; font-weight: 800; letter-spacing: -0.035em; margin-top: var(--s1); }
-.sheet__desc { text-align: center; color: var(--ink-3); margin: var(--s4) auto var(--s6); max-width: 30ch; line-height: 1.5; }
+.sheet__desc { text-align: center; color: var(--ink-3); margin: var(--s4) auto var(--s6); max-width: 32ch; line-height: 1.55; }
+.sheet__caveat { text-align: center; color: var(--ink-4); font-size: 0.78rem; line-height: 1.45; margin: 0 auto var(--s5); max-width: 30ch; }
 
 .durations { display: flex; justify-content: center; gap: var(--s6); margin-bottom: var(--s7); }
 .duration { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; color: var(--ink-4); position: relative; padding: 4px 2px; font-variant-numeric: tabular-nums; transition: color 0.2s ease; }
@@ -243,12 +244,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   grid-area: 1 / 1;
   border-radius: 50%;
   border: 1.4px solid rgba(255,255,255,var(--o, 0.4));
-  transform: scale(var(--breath-scale, 0.5));
-  transition: transform var(--phase-dur, 4s) var(--phase-ease, cubic-bezier(0.42,0,0.58,1));
-  transition-delay: var(--d, 0s);
+  /* Scale is computed every tick from the elapsed clock with an easeInOutSine
+     curve (see app.js). One time source drives scale, count and progress, so
+     the motion tracks the breath cue exactly with no lag, drift, or snapping. */
+  transform: scale(var(--breath-scale, 0.42));
   will-change: transform;
 }
 .ring.dot { border: none; background: #fff; box-shadow: 0 0 24px rgba(255,255,255,0.6); }
+
+/* holds: a gentle shimmer so a static orb reads as "holding", not frozen */
+.rings.holding { animation: holdbreath 2.6s ease-in-out infinite; }
+@keyframes holdbreath { 0%, 100% { opacity: 1; } 50% { opacity: 0.78; } }
 
 /* label sits below the rings, Stoic-style */
 .session__label { position: relative; z-index: 2; text-align: center; pointer-events: none; }
