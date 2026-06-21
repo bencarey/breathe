@@ -32,6 +32,20 @@ const ICONS = {
   // 4-7-8 -> concentric ripple
   calm: M(`<circle cx="24" cy="24" r="17" stroke="currentColor" stroke-width="2" opacity="0.35"/><circle cx="24" cy="24" r="11" stroke="currentColor" stroke-width="2" opacity="0.6"/><circle cx="24" cy="24" r="5" stroke="currentColor" stroke-width="2"/><circle cx="24" cy="24" r="1.6" fill="currentColor"/>`),
   sleep: M(`<path d="M31 31a13 13 0 1 1-1-21 10.5 10.5 0 0 0 1 21z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>`),
+  // alternate nostril -> circle split with two channels
+  nadishodhana: M(`<circle cx="24" cy="24" r="15" stroke="currentColor" stroke-width="2"/><path d="M24 9v30" stroke="currentColor" stroke-width="1.6" opacity="0.5"/><circle cx="17" cy="24" r="2.4" fill="currentColor"/><circle cx="31" cy="24" r="2.4" fill="currentColor"/>`),
+  // long deep -> expanding swell (concentric arcs)
+  longdeep: M(`<path d="M11 30a13 13 0 0 1 26 0" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M16 32a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="2" fill="none" opacity="0.6"/><path d="M20 34a4 4 0 0 1 8 0" stroke="currentColor" stroke-width="1.8" fill="none" opacity="0.35"/>`),
+  // ocean breath -> a wave within a bowl
+  ujjayi: M(`<circle cx="24" cy="24" r="15" stroke="currentColor" stroke-width="2"/><path d="M14 25c3.3-5 6.7-5 10 0s6.7 5 10 0" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/>`),
+  // humming bee -> vibration radiating from a center
+  bhramari: M(`<circle cx="24" cy="24" r="3.2" fill="currentColor"/><path d="M31 17a10 10 0 0 1 0 14M17 17a10 10 0 0 0 0 14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M35 13a16 16 0 0 1 0 22M13 13a16 16 0 0 0 0 22" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.45"/>`),
+  // cooling breath -> a droplet
+  cooling: M(`<path d="M24 9c6 8 9 12 9 17a9 9 0 0 1-18 0c0-5 3-9 9-17z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>`),
+  // breath of fire -> a flame
+  breathoffire: M(`<path d="M24 37a8 8 0 0 0 8-8c0-6-5-8.5-5-14-3 2.5-4.5 5-4.5 8-2.2-.3-3-2-3-4.2-2.5 2.3-4 5.2-3.5 9.2a8 8 0 0 0 8 9z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>`),
+  // yogic ratio -> ascending bars (1:2:2)
+  tripleratio: M(`<rect x="13" y="27" width="5" height="9" rx="1" fill="currentColor"/><rect x="21.5" y="18" width="5" height="18" rx="1" fill="currentColor"/><rect x="30" y="12" width="5" height="24" rx="1" fill="currentColor"/>`),
 };
 
 const ringsSVG = (stroke = "rgba(255,255,255,0.5)") => `
@@ -98,6 +112,47 @@ const PATTERNS = [
     desc: "A strong exhale bias to drift toward rest.",
     guidance: "A long, slow exhale carries you toward sleep. Keep everything loose and let go.",
     phases: [["Inhale", 4], ["Hold", 2], ["Exhale", 8]], unit: "min", options: [3, 5, 10], default: 5 },
+
+  /* ---- Kundalini / pranayama (Open-inspired) ---- */
+  { id: "breathoffire", name: "Breath of Fire", technique: "Kapalabhati · paced", group: "morning", icon: "breathoffire", color: "#c0392b",
+    desc: "A rhythmic pumping breath to build heat and energy.",
+    guidance: "Equal, rhythmic breaths through the nose, the belly pumping with each one. A light snap out on the exhale; let the inhale fall in on its own. Steady, not frantic.",
+    caveat: "Stop if light-headed. Avoid if pregnant, or with high blood pressure, heart disease, epilepsy, GERD, or recent abdominal surgery.",
+    phases: [["Inhale", 1], ["Exhale", 1]], unit: "breaths", options: [30, 60, 120], default: 30 },
+
+  { id: "longdeep", name: "Long Deep", technique: "Long deep breathing", group: "morning", icon: "longdeep", color: "#9a7b3f",
+    desc: "A slow three-part yogic breath — belly, ribs, chest.",
+    guidance: "A slow, full wave: let the belly rise, then the ribs widen, then the chest lift. Exhale in reverse, long and smooth, through the nose.",
+    phases: [["Inhale", 7], ["Exhale", 8]], unit: "min", options: [3, 5, 11], default: 5 },
+
+  { id: "nadishodhana", name: "Alternate Nostril", technique: "Nadi Shodhana · 4-4-4-4", group: "anytime", icon: "nadishodhana", color: "#3f7e9c",
+    desc: "Alternate-nostril breathing to balance and settle the mind.",
+    guidance: "Close the right nostril with the thumb and breathe through the left; then switch and breathe through the right. Follow the prompts — let the hands keep the rhythm.",
+    caveat: "Breathe gently, never strain the holds. Skip the holds if pregnant. Sit upright.",
+    phases: [["Inhale L", 4], ["Hold", 4], ["Exhale R", 4], ["Inhale R", 4], ["Hold", 4], ["Exhale L", 4]], unit: "min", options: [2, 5, 10], default: 5 },
+
+  { id: "ujjayi", name: "Ocean Breath", technique: "Ujjayi · 5-5", group: "anytime", icon: "ujjayi", color: "#2f6f73",
+    desc: "Whispering ocean breath with a gently constricted throat.",
+    guidance: "Breathe through the nose with a soft constriction at the back of the throat, like fogging a mirror with your mouth closed. Listen for the quiet ocean sound, even in and out.",
+    caveat: "Keep the throat soft, never forced. Ease off if it strains.",
+    phases: [["Inhale", 5], ["Exhale", 5]], unit: "min", options: [2, 5, 10], default: 5 },
+
+  { id: "cooling", name: "Cooling Breath", technique: "Sitali · 4-4-6", group: "anytime", icon: "cooling", color: "#2f8fa0",
+    desc: "Curl the tongue and sip cool air to calm and cool down.",
+    guidance: "Curl the tongue into a tube (or purse the lips) and sip cool air in through it. Close the mouth, hold briefly, then exhale slowly through the nose.",
+    caveat: "Best in warm conditions. Skip if you feel chilled or congested.",
+    phases: [["Inhale", 4], ["Hold", 4], ["Exhale", 6]], unit: "min", options: [2, 4, 6], default: 4 },
+
+  { id: "tripleratio", name: "Yogic Ratio", technique: "Pranayama · 1:2:2", group: "evening", icon: "tripleratio", color: "#4a4f7a",
+    desc: "A traditional inhale–hold–exhale ratio for steady calm.",
+    guidance: "Inhale for four, hold for eight, exhale for eight — a classic yogic ratio that lengthens the breath without strain.",
+    caveat: "Keep the hold relaxed. Shorten or skip the hold if you feel any air-hunger.",
+    phases: [["Inhale", 4], ["Hold", 8], ["Exhale", 8]], unit: "min", options: [2, 4, 6], default: 4 },
+
+  { id: "bhramari", name: "Humming Bee", technique: "Bhramari · hum", group: "evening", icon: "bhramari", color: "#5a4a8c",
+    desc: "A long humming exhale to quiet an anxious mind.",
+    guidance: "Inhale softly through the nose, then hum like a bee on a long, smooth exhale with the mouth closed. Feel the gentle vibration in the head and chest.",
+    phases: [["Inhale", 4], ["Exhale", 8]], unit: "breaths", options: [6, 10, 15], default: 10 },
 ];
 const byId = (id) => PATTERNS.find((p) => p.id === id);
 
@@ -208,15 +263,16 @@ function Home() {
     ? `${st.streak}-day streak · ${st.totalMin} min total`
     : "A few mindful breaths is all it takes.";
 
-  const rows = PATTERNS.map((p) => `
-    <button class="prow2" data-pick="${p.id}" style="--c:${p.color}">
+  const groups = { morning: "Morning", anytime: "Anytime", evening: "Evening" };
+  const prow2row = (p) => `<button class="prow2" data-pick="${p.id}" style="--c:${p.color}">
       <span class="prow2__tick"></span>
-      <span class="prow2__body">
-        <span class="prow2__name">${p.name}</span>
-        <span class="prow2__spec">${p.technique}</span>
-      </span>
+      <span class="prow2__body"><span class="prow2__name">${p.name}</span><span class="prow2__spec">${p.technique}</span></span>
       <span class="prow2__chev">${UI.chev}</span>
-    </button>`).join("");
+    </button>`;
+  const practicesHTML = Object.entries(groups).map(([k, label]) => {
+    const items = PATTERNS.filter((p) => p.group === k);
+    return `<div class="group-label">${label}</div><div class="plist">${items.map(prow2row).join("")}</div>`;
+  }).join("");
 
   const el = h(`<main class="screen home">
     <div class="home__head">
@@ -245,8 +301,7 @@ function Home() {
       <div class="hstat"><div class="hstat__val">${st.totalMin}</div><div class="hstat__label">Minutes</div></div>
     </div>
 
-    <div class="group-label">Practices</div>
-    <div class="plist">${rows}</div>
+    ${practicesHTML}
   </main>`);
 
   el.querySelector(".recommend").addEventListener("click", () => openSheet(featured.id));
@@ -266,22 +321,25 @@ function pcard(p) {
 
 /* ----- Explore ----- */
 function Explore() {
+  const groups = { morning: "Morning", anytime: "Anytime", evening: "Evening" };
+  const row = (p) => `<button class="prow" data-pattern="${p.id}" style="--c:${p.color}">
+      <div class="icon-tile">${ICONS[p.icon]}</div>
+      <div class="prow__body">
+        <div class="prow__name">${p.name}</div>
+        <div class="prow__desc">${p.desc}</div>
+        <div class="prow__pattern">${p.technique}</div>
+      </div>
+      <div class="prow__chev">${UI.chev}</div>
+    </button>`;
+  const sections = Object.entries(groups).map(([k, label]) => {
+    const items = PATTERNS.filter((p) => p.group === k);
+    return `<div class="group-label">${label}</div><div class="explore-list">${items.map(row).join("")}</div>`;
+  }).join("");
   const el = h(`<main class="screen">
     <div class="eyebrow">Breathing</div>
     <h1 class="screen__title">Explore</h1>
     <p class="screen__sub">Find the pattern that fits the moment. Each guides your breath at a different, research-backed rhythm.</p>
-    <div class="explore-list" style="margin-top: var(--s6)">
-      ${PATTERNS.map((p) => `
-        <button class="prow" data-pattern="${p.id}" style="--c:${p.color}">
-          <div class="icon-tile">${ICONS[p.icon]}</div>
-          <div class="prow__body">
-            <div class="prow__name">${p.name}</div>
-            <div class="prow__desc">${p.desc}</div>
-            <div class="prow__pattern">${p.technique}</div>
-          </div>
-          <div class="prow__chev">${UI.chev}</div>
-        </button>`).join("")}
-    </div>
+    <div style="margin-top: var(--s5)">${sections}</div>
   </main>`);
   el.querySelectorAll("[data-pattern]").forEach((b) => b.addEventListener("click", () => openSheet(b.dataset.pattern)));
   return el;
@@ -410,7 +468,12 @@ function startSession(patternId, value) {
   document.body.style.background = p.color;
 
   // resolve each phase's start/end fullness (holds keep the previous level)
-  const targetOf = (ph, prev) => (ph[2] != null ? ph[2] : ph[0] === "Inhale" || ph[0] === "Top-up" ? 1 : ph[0] === "Exhale" ? 0.42 : prev);
+  // match by first word so directional labels ("Inhale L", "Exhale R") resolve
+  const targetOf = (ph, prev) => {
+    if (ph[2] != null) return ph[2];
+    const base = ph[0].split(" ")[0];
+    return base === "Inhale" || base === "Top-up" ? 1 : base === "Exhale" ? 0.42 : prev;
+  };
   const phases = p.phases.map((ph) => ({ label: ph[0], secs: ph[1] }));
   let prev = 0.42;
   phases.forEach((ph, i) => { ph.from = prev; ph.to = targetOf(p.phases[i], prev); prev = ph.to; });
@@ -488,7 +551,7 @@ function startSession(patternId, value) {
       session.lastKey = key;
       phaseEl.textContent = ph.label === "Top-up" ? "Top up" : ph.label;
       ringsBox.classList.toggle("holding", ph.label === "Hold");
-      CUE[ph.label]?.();
+      CUE[ph.label.split(" ")[0]]?.();
       haptic(1);
     }
     paint(ph.from, ph.to, ph.secs ? into / ph.secs : 1);
