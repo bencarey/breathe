@@ -358,57 +358,44 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 /* =========================================================================
-   Home (redesigned) — centered recommended orb + horizontal practice scroller
+   Home — Dieter Rams eye: order, honesty, restraint ("as little as possible").
+   Warm Stoic/Eames palette; color reserved to small functional markers.
    ========================================================================= */
-.home .greeting { margin-top: var(--s7); }
+.home__head {
+  display: flex; align-items: baseline; justify-content: space-between;
+  padding-bottom: var(--s4); border-bottom: 1px solid var(--line);
+}
+.home__mark { font-size: 2rem; }
+.home__date { font-size: 0.8rem; color: var(--ink-4); font-weight: 500; }
 
-/* the recommended practice as a large circular bloom (taps to begin) */
-.rec {
-  display: flex; flex-direction: column; align-items: center; text-align: center;
-  width: 100%; margin-top: var(--s7); background: none;
-}
-.rec__eyebrow { margin-bottom: var(--s5); }
-.rec__orb {
-  position: relative; width: min(64vw, 248px); aspect-ratio: 1; border-radius: 50%;
-  display: grid; place-items: center; overflow: hidden;
-  box-shadow: 0 28px 64px -26px color-mix(in srgb, var(--c) 70%, transparent);
-  transition: transform 0.2s cubic-bezier(0.22,1,0.36,1);
-}
-.rec:active .rec__orb { transform: scale(0.97); }
-.rec__bloom { position: absolute; inset: 0; border-radius: 50%;
-  background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--c) 72%, #fff), var(--c) 76%); }
-.rec__orb svg { position: relative; z-index: 1; width: 100%; height: 100%; }
-.rec__name { font-size: 2rem; font-weight: 800; letter-spacing: -0.035em; margin-top: var(--s5); }
-.rec__desc { color: var(--ink-3); margin-top: var(--s2); line-height: 1.5; font-size: 0.95rem; max-width: 30ch; }
-.rec__btn {
-  margin-top: var(--s5); background: var(--c, var(--ink-max)); color: #fff;
-  border-radius: var(--r-pill); padding: 14px 38px; font-weight: 700; font-size: 0.98rem; letter-spacing: 0.01em;
-}
+.home .greeting { margin-top: var(--s6); }
+.home .greeting__hi { font-size: 2.1rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
+.home .greeting__line { color: var(--ink-3); margin-top: var(--s2); font-size: 0.92rem; font-variant-numeric: tabular-nums; }
 
-/* stats — quieter row of three */
-.home__stats { margin-top: var(--s8); display: grid; grid-template-columns: repeat(3, 1fr); }
-.hstat { text-align: center; padding: 0 var(--s3); }
+/* recommended — a plain, honest functional block, not a decorative panel */
+.recommend { display: block; width: 100%; text-align: left; background: none; margin-top: var(--s8); }
+.recommend .eyebrow { margin-bottom: var(--s3); }
+.recommend__top { display: flex; align-items: center; justify-content: space-between; gap: var(--s4); }
+.recommend__name { font-size: 2rem; font-weight: 700; letter-spacing: -0.03em; }
+.recommend__mark { width: 44px; height: 44px; flex: none; color: var(--c); }
+.recommend__mark svg { width: 100%; height: 100%; }
+.recommend__spec { color: var(--ink-3); margin-top: var(--s2); font-size: 0.88rem; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
+.recommend__btn { margin-top: var(--s5); display: inline-flex; align-items: center; background: var(--ink-max); color: #fff; border-radius: var(--r-pill); padding: 13px 36px; font-weight: 600; font-size: 0.95rem; letter-spacing: 0.01em; }
+.recommend:active .recommend__btn { filter: brightness(1.8); }
+
+/* stats — honest tabular data, ruled like a Braun panel */
+.home__stats { margin-top: var(--s8); display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.hstat { padding: var(--s5) var(--s4); }
 .hstat + .hstat { border-left: 1px solid var(--line); }
-.hstat__val { font-size: 1.9rem; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
-.hstat__label { font-size: 0.64rem; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-4); margin-top: var(--s2); }
+.hstat__val { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+.hstat__label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.16em; color: var(--ink-4); margin-top: var(--s2); }
 
-/* horizontal practice scroller */
-.practice-row {
-  display: flex; gap: var(--s4); overflow-x: auto; -webkit-overflow-scrolling: touch;
-  margin: 0 calc(-1 * var(--s5)); padding: var(--s2) var(--s5) var(--s4); scrollbar-width: none;
-}
-.practice-row::-webkit-scrollbar { display: none; }
-.pchip { flex: none; width: 74px; display: flex; flex-direction: column; align-items: center; gap: var(--s3); background: none; }
-.pchip__orb {
-  width: 70px; height: 70px; border-radius: 50%;
-  background: color-mix(in srgb, var(--c) 14%, var(--surface)); color: var(--c);
-  display: grid; place-items: center; transition: transform 0.15s ease;
-}
-.pchip:active .pchip__orb { transform: scale(0.92); }
-.pchip__orb svg { width: 38px; height: 38px; }
-.pchip__name { font-size: 0.78rem; font-weight: 600; color: var(--ink-2); letter-spacing: -0.01em; }
-
-@media (min-width: 1080px) {
-  .rec__orb { width: min(34vw, 300px); }
-  .practice-row { flex-wrap: wrap; justify-content: center; overflow: visible; margin: 0; padding: var(--s2) 0; }
-}
+/* practices — an ordered, hairline-ruled index; color is a small honest marker */
+.plist { margin-top: var(--s2); }
+.prow2 { display: flex; align-items: center; gap: var(--s4); width: 100%; text-align: left; background: none; padding: var(--s4) 2px; border-bottom: 1px solid var(--line-faint); transition: opacity 0.15s ease; }
+.prow2:active { opacity: 0.55; }
+.prow2__tick { width: 8px; height: 8px; border-radius: 2px; background: var(--c); flex: none; }
+.prow2__body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.prow2__name { font-weight: 600; font-size: 1.02rem; letter-spacing: -0.01em; }
+.prow2__spec { font-size: 0.76rem; color: var(--ink-4); letter-spacing: 0.01em; }
+.prow2__chev { color: var(--ink-4); opacity: 0.55; flex: none; }

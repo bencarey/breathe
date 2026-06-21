@@ -202,32 +202,41 @@ function Home() {
   const st = stats();
   const dateStr = now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
 
-  const chips = PATTERNS.map((p) => `
-    <button class="pchip" data-pchip="${p.id}" style="--c:${p.color}">
-      <span class="pchip__orb">${ICONS[p.icon]}</span>
-      <span class="pchip__name">${p.name}</span>
+  const unit = (p) => (p.unit === "breaths" ? "breaths" : "min");
+  const recSpec = `${featured.technique} · ${featured.default} ${unit(featured)}`;
+  const status = st.streak > 0
+    ? `${st.streak}-day streak · ${st.totalMin} min total`
+    : "A few mindful breaths is all it takes.";
+
+  const rows = PATTERNS.map((p) => `
+    <button class="prow2" data-pick="${p.id}" style="--c:${p.color}">
+      <span class="prow2__tick"></span>
+      <span class="prow2__body">
+        <span class="prow2__name">${p.name}</span>
+        <span class="prow2__spec">${p.technique}</span>
+      </span>
+      <span class="prow2__chev">${UI.chev}</span>
     </button>`).join("");
 
   const el = h(`<main class="screen home">
-    <div class="home__top">
+    <div class="home__head">
       <div class="wordmark home__mark">breathe<span class="dot">.</span></div>
       <div class="home__date">${dateStr}</div>
     </div>
 
     <div class="greeting">
       <div class="greeting__hi">${greet}.</div>
-      <div class="greeting__line">${st.streak > 0 ? `You're on a <b>${st.streak}-day</b> streak. Take a breath.` : "A few mindful breaths is all it takes."}</div>
+      <div class="greeting__line">${status}</div>
     </div>
 
-    <button class="rec" style="--c:${featured.color}">
-      <div class="eyebrow rec__eyebrow">Recommended now</div>
-      <div class="rec__orb">
-        <div class="rec__bloom"></div>
-        ${ringsSVG("rgba(255,255,255,0.6)")}
+    <button class="recommend" style="--c:${featured.color}">
+      <div class="eyebrow">Recommended now</div>
+      <div class="recommend__top">
+        <div class="recommend__name">${featured.name}</div>
+        <div class="recommend__mark">${ICONS[featured.icon]}</div>
       </div>
-      <div class="rec__name">${featured.name}</div>
-      <div class="rec__desc">${featured.desc}</div>
-      <span class="rec__btn">Begin</span>
+      <div class="recommend__spec">${recSpec}</div>
+      <span class="recommend__btn">Begin</span>
     </button>
 
     <div class="home__stats">
@@ -237,11 +246,11 @@ function Home() {
     </div>
 
     <div class="group-label">Practices</div>
-    <div class="practice-row">${chips}</div>
+    <div class="plist">${rows}</div>
   </main>`);
 
-  el.querySelector(".rec").addEventListener("click", () => openSheet(featured.id));
-  el.querySelectorAll("[data-pchip]").forEach((b) => b.addEventListener("click", () => openSheet(b.dataset.pchip)));
+  el.querySelector(".recommend").addEventListener("click", () => openSheet(featured.id));
+  el.querySelectorAll("[data-pick]").forEach((b) => b.addEventListener("click", () => openSheet(b.dataset.pick)));
   return el;
 }
 
