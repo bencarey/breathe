@@ -58,43 +58,43 @@ const UI = {
    labels: Inhale | Exhale | Hold | Top-up. unit: 'min' (timed) | 'breaths' (cycles).
    See breathe-pattern-spec for sourcing (HeartMath, Weil, Huberman, Breathwrk). */
 const PATTERNS = [
-  { id: "energy", name: "Energy", technique: "Energizing breath", group: "morning", icon: "energy", color: "#bc6446",
+  { id: "energy", name: "Energy", technique: "Energizing breath", group: "morning", icon: "energy", color: "#ec5a2e",
     desc: "A longer inhale to lift energy and alertness.",
     guidance: "Breathe in longer than you breathe out to raise alertness. Sit upright, and ease off if you feel light-headed.",
     caveat: "Best seated or lying down. Skip if pregnant or prone to dizziness.",
     phases: [["Inhale", 4], ["Exhale", 2]], unit: "min", options: [1, 2, 3], default: 2 },
 
-  { id: "creativity", name: "Creativity", technique: "Open awareness", group: "morning", icon: "creativity", color: "#47557e",
+  { id: "creativity", name: "Creativity", technique: "Open awareness", group: "morning", icon: "creativity", color: "#2e27e6",
     desc: "A spacious, even rhythm to open the mind.",
     guidance: "An even, spacious rhythm with gentle pauses. Let the mind wander and make connections.",
     phases: [["Inhale", 4], ["Hold", 2], ["Exhale", 6], ["Hold", 2]], unit: "min", options: [2, 4, 6], default: 4 },
 
-  { id: "balance", name: "Balance", technique: "Coherence · 5.5 bpm", group: "anytime", icon: "balance", color: "#6e8a6f",
+  { id: "balance", name: "Balance", technique: "Coherence · 5.5 bpm", group: "anytime", icon: "balance", color: "#1f8e7d",
     desc: "Resonant breathing for calm, steady balance.",
     guidance: "Smooth and even, with no holds. Equal in and out at the body's resonant pace settles the nervous system and lifts heart-rate variability.",
     phases: [["Inhale", 5.5], ["Exhale", 5.5]], unit: "min", options: [2, 5, 10], default: 5 },
 
-  { id: "focus", name: "Focus", technique: "Box breathing · 4-4-4-4", group: "anytime", icon: "focus", color: "#2e2b27",
+  { id: "focus", name: "Focus", technique: "Box breathing · 4-4-4-4", group: "anytime", icon: "focus", color: "#16161a",
     desc: "Equal box breathing to steady attention.",
     guidance: "Equal counts on all four sides of the box. Keep the holds relaxed, never strained.",
     phases: [["Inhale", 4], ["Hold", 4], ["Exhale", 4], ["Hold", 4]], unit: "min", options: [2, 4, 8], default: 4 },
 
-  { id: "unwind", name: "Unwind", technique: "Extended exhale · 4-6", group: "anytime", icon: "unwind", color: "#a66b53",
+  { id: "unwind", name: "Unwind", technique: "Extended exhale · 4-6", group: "anytime", icon: "unwind", color: "#c2562f",
     desc: "A longer exhale to gently let go.",
     guidance: "Let the out-breath be longer than the in-breath. Soften the jaw and shoulders as you exhale.",
     phases: [["Inhale", 4], ["Exhale", 6]], unit: "min", options: [2, 5, 10], default: 5 },
 
-  { id: "reset", name: "Reset", technique: "Physiological sigh", group: "anytime", icon: "reset", color: "#5c7e80",
+  { id: "reset", name: "Reset", technique: "Physiological sigh", group: "anytime", icon: "reset", color: "#2f8fb0",
     desc: "A double inhale and long exhale to reset fast.",
     guidance: "Inhale fully through the nose, then sip in a little more air, then a long, slow exhale through the mouth.",
     phases: [["Inhale", 2, 0.8], ["Top-up", 1, 1], ["Exhale", 6, 0.42]], unit: "min", options: [1, 3, 5], default: 3 },
 
-  { id: "calm", name: "Calm", technique: "4-7-8 breath", group: "evening", icon: "calm", color: "#6b5a74",
+  { id: "calm", name: "Calm", technique: "4-7-8 breath", group: "evening", icon: "calm", color: "#6a4a8c",
     desc: "Dr. Weil's relaxing breath for stress and sleep.",
     guidance: "Inhale quietly through the nose for four, hold for seven, then exhale through the mouth with a soft whoosh for eight. Four breaths is one round.",
     phases: [["Inhale", 4], ["Hold", 7], ["Exhale", 8]], unit: "breaths", options: [4, 8], default: 4 },
 
-  { id: "sleep", name: "Sleep", technique: "Wind-down", group: "evening", icon: "sleep", color: "#3a3f57",
+  { id: "sleep", name: "Sleep", technique: "Wind-down", group: "evening", icon: "sleep", color: "#2b2e6e",
     desc: "A strong exhale bias to drift toward rest.",
     guidance: "A long, slow exhale carries you toward sleep. Keep everything loose and let go.",
     phases: [["Inhale", 4], ["Hold", 2], ["Exhale", 8]], unit: "min", options: [3, 5, 10], default: 5 },
@@ -202,14 +202,13 @@ function Home() {
   const st = stats();
   const dateStr = now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
 
-  const groups = { morning: "Morning", anytime: "Anytime", evening: "Evening" };
-  const groupsHTML = Object.entries(groups).map(([key, label]) => {
-    const items = PATTERNS.filter((p) => p.group === key && p.id !== featured.id);
-    if (!items.length) return "";
-    return `<div class="group-label">${label}</div><div class="pgrid">${items.map(pcard).join("")}</div>`;
-  }).join("");
+  const chips = PATTERNS.map((p) => `
+    <button class="pchip" data-pchip="${p.id}" style="--c:${p.color}">
+      <span class="pchip__orb">${ICONS[p.icon]}</span>
+      <span class="pchip__name">${p.name}</span>
+    </button>`).join("");
 
-  const el = h(`<main class="screen">
+  const el = h(`<main class="screen home">
     <div class="home__top">
       <div class="wordmark home__mark">breathe<span class="dot">.</span></div>
       <div class="home__date">${dateStr}</div>
@@ -217,28 +216,32 @@ function Home() {
 
     <div class="greeting">
       <div class="greeting__hi">${greet}.</div>
-      <div class="greeting__line">A few mindful breaths is all it takes. ${st.streak > 0 ? `You're on a <b>${st.streak}-day</b> streak.` : "Start a streak today."}</div>
+      <div class="greeting__line">${st.streak > 0 ? `You're on a <b>${st.streak}-day</b> streak. Take a breath.` : "A few mindful breaths is all it takes."}</div>
     </div>
 
-    <div class="streak">
-      <div class="streak__item"><div class="streak__val">${st.streak}</div><div class="streak__label">Day streak</div></div>
-      <div class="streak__item"><div class="streak__val">${st.count}</div><div class="streak__label">Sessions</div></div>
-      <div class="streak__item"><div class="streak__val">${st.totalMin}</div><div class="streak__label">Minutes</div></div>
-    </div>
-
-    <button class="hero" style="--c:${featured.color}">
-      <div class="hero__rings">${ringsSVG("rgba(255,255,255,0.55)")}</div>
-      <div class="eyebrow hero__eyebrow">Recommended now</div>
-      <div class="hero__title">${featured.name}</div>
-      <div class="hero__desc">${featured.desc}</div>
-      <div class="hero__btn">Begin</div>
+    <button class="rec" style="--c:${featured.color}">
+      <div class="eyebrow rec__eyebrow">Recommended now</div>
+      <div class="rec__orb">
+        <div class="rec__bloom"></div>
+        ${ringsSVG("rgba(255,255,255,0.6)")}
+      </div>
+      <div class="rec__name">${featured.name}</div>
+      <div class="rec__desc">${featured.desc}</div>
+      <span class="rec__btn">Begin</span>
     </button>
 
-    ${groupsHTML}
+    <div class="home__stats">
+      <div class="hstat"><div class="hstat__val">${st.streak}</div><div class="hstat__label">Day streak</div></div>
+      <div class="hstat"><div class="hstat__val">${st.count}</div><div class="hstat__label">Sessions</div></div>
+      <div class="hstat"><div class="hstat__val">${st.totalMin}</div><div class="hstat__label">Minutes</div></div>
+    </div>
+
+    <div class="group-label">Practices</div>
+    <div class="practice-row">${chips}</div>
   </main>`);
 
-  el.querySelector(".hero").addEventListener("click", () => openSheet(featured.id));
-  el.querySelectorAll("[data-pcard]").forEach((b) => b.addEventListener("click", () => openSheet(b.dataset.pcard)));
+  el.querySelector(".rec").addEventListener("click", () => openSheet(featured.id));
+  el.querySelectorAll("[data-pchip]").forEach((b) => b.addEventListener("click", () => openSheet(b.dataset.pchip)));
   return el;
 }
 
