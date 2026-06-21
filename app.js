@@ -182,29 +182,115 @@ function stats() {
   return { count: s.length, totalMin, streak, days };
 }
 
-/* ---------- audio cues ---------- */
-let actx = null;
-function tone(freq, dur = 0.5, vol = 0.05) {
-  if (!store.sound) return;
-  try {
-    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-    if (actx.state === "suspended") actx.resume();
-    const o = actx.createOscillator(), g = actx.createGain();
-    o.type = "sine"; o.frequency.value = freq;
-    o.connect(g); g.connect(actx.destination);
-    const t = actx.currentTime;
-    g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(vol, t + 0.15);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.start(t); o.stop(t + dur + 0.05);
-  } catch {}
-}
-const CUE = {
-  Inhale: () => tone(396, 0.6),
-  "Top-up": () => tone(528, 0.3, 0.04),
-  Exhale: () => tone(264, 0.7),
-  Hold: () => tone(330, 0.25, 0.03),
+/* ---------- soundscape: ambient drone + synthesized Tibetan bowls & koshi chimes ----
+   All synthesized via Web Audio (no asset files, works offline). Gated by store.sound. */
+const Snd = {
+  ctx: null, master: null, reverb: null, pad: null,
+  scale: [196.0, 233.08, 261.63, 311.13, 349.23, 392.0], // G minor-pentatonic-ish, calm
+  ensure() {
+    if (this.ctx) return this.ctx;
+    const C = window.AudioContext || window.webkitAudioContext;
+    if (!C) return null;
+    const ctx = new C();
+    this.ctx = ctx;
+    const master = ctx.createGain(); master.gain.value = 0.85;
+    const lim = ctx.createDynamicsCompressor();
+    lim.threshold.value = -7; lim.ratio.value = 12; lim.attack.value = 0.004; lim.release.value = 0.25;
+    master.connect(lim); lim.connect(ctx.destination);
+    this.master = master;
+    // simple convolution reverb (decaying-noise impulse) for space
+    const dur = 2.8, len = Math.floor(ctx.sampleRate * dur), ir = ctx.createBuffer(2, len, ctx.sampleRate);
+    for (let ch = 0; ch < 2; ch++) { const d = ir.getChannelData(ch); for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.4); }
+    const conv = ctx.createConvolver(); conv.buffer = ir;
+    const rg = ctx.createGain(); rg.gain.value = 0.9; conv.connect(rg); rg.connect(master);
+    this.reverb = conv;
+    return ctx;
+  },
+  unlock() { // call inside a user gesture (iOS)
+    if (!store.sound) return;
+    const ctx = this.ensure(); if (!ctx) return;
+    if (ctx.state === "suspended") ctx.resume();
+    try { const b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource(); s.buffer = b; s.connect(ctx.destination); s.start(0); } catch {}
+  },
+  // a struck singing bowl: inharmonic partials + beating + long decay
+  bowl(freq, dur = 5, gain = 0.16) {
+    if (!store.sound) return; const ctx = this.ensure(); if (!ctx) return;
+    const t = ctx.currentTime;
+    const out = ctx.createGain(); out.gain.value = gain; out.connect(this.master);
+    const send = ctx.createGain(); send.gain.value = 0.55; out.connect(send); send.connect(this.reverb);
+    const ratios = [1, 2.76, 5.4, 8.93], pg = [1, 0.45, 0.22, 0.1];
+    ratios.forEach((r, i) => {
+      const voices = i === 0 ? [0, 6] : [0]; // detuned pair on fundamental -> shimmer/beating
+      voices.forEach((det) => {
+        const o = ctx.createOscillator(); o.type = "sine"; o.frequency.value = freq * r; o.detune.value = det;
+        const g = ctx.createGain();
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(pg[i] * (det ? 0.6 : 1), t + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + dur * (1 - i * 0.12));
+        o.connect(g); g.connect(out); o.start(t); o.stop(t + dur + 0.1);
+      });
+    });
+  },
+  // koshi-style chime: a quick gentle cluster of bell tones
+  chime(notes, gain = 0.07) {
+    if (!store.sound) return; const ctx = this.ensure(); if (!ctx) return;
+    const base = ctx.currentTime;
+    notes.forEach((f, i) => {
+      const t = base + i * 0.085, dur = 2.4;
+      [[2, "triangle", gain], [2 * 2.76, "sine", gain * 0.3]].forEach(([mul, type, gn]) => {
+        const o = ctx.createOscillator(); o.type = type; o.frequency.value = f * mul;
+        const g = ctx.createGain(); g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(gn, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+        o.connect(g); g.connect(this.master); g.connect(this.reverb); o.start(t); o.stop(t + dur + 0.05);
+      });
+    });
+  },
+  startAmbient() {
+    if (!store.sound) return; const ctx = this.ensure(); if (!ctx || this.pad) return;
+    const padGain = ctx.createGain(); padGain.gain.setValueAtTime(0, ctx.currentTime); padGain.gain.linearRampToValueAtTime(0.045, ctx.currentTime + 5);
+    const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 650; lp.Q.value = 0.4;
+    padGain.connect(lp); lp.connect(this.master); lp.connect(this.reverb);
+    const nodes = [];
+    [98.0, 146.83, 196.0].forEach((f, idx) => {
+      [-4, 5].forEach((det) => { const o = ctx.createOscillator(); o.type = idx === 0 ? "sine" : "triangle"; o.frequency.value = f; o.detune.value = det; const g = ctx.createGain(); g.gain.value = idx === 0 ? 0.5 : 0.22; o.connect(g); g.connect(padGain); o.start(); nodes.push(o); });
+    });
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.05; const lg = ctx.createGain(); lg.gain.value = 160; lfo.connect(lg); lg.connect(lp.frequency); lfo.start(); nodes.push(lfo);
+    this.pad = { padGain, nodes };
+  },
+  stopAmbient() {
+    if (!this.pad || !this.ctx) return; const { padGain, nodes } = this.pad, t = this.ctx.currentTime;
+    try { padGain.gain.cancelScheduledValues(t); padGain.gain.setValueAtTime(padGain.gain.value, t); padGain.gain.linearRampToValueAtTime(0, t + 2.5); } catch {}
+    nodes.forEach((o) => { try { o.stop(t + 2.6); } catch {} });
+    this.pad = null;
+  },
+  cue(type) {
+    const s = this.scale;
+    if (type === "inhale") this.chime([s[2], s[3], s[4]]);          // rising shimmer
+    else if (type === "exhale") this.bowl(s[0], 5.5, 0.15);          // low warm bowl
+    else if (type === "topup") this.chime([s[5]], 0.05);
+    /* hold: rest in the reverb wash */
+  },
+  complete() { this.bowl(this.scale[2], 6.5, 0.2); setTimeout(() => this.chime([this.scale[2], this.scale[3], this.scale[4], this.scale[5]], 0.08), 450); },
 };
+const CUE = {
+  Inhale: () => Snd.cue("inhale"),
+  "Top-up": () => Snd.cue("topup"),
+  Exhale: () => Snd.cue("exhale"),
+  Hold: () => Snd.cue("hold"),
+};
+
+/* full screen: works on desktop + Android (must be inside a user gesture). iOS
+   Safari has no element fullscreen API, but an installed home-screen PWA already
+   runs edge-to-edge, so this is a no-op there. */
+function enterFullscreen() {
+  const el = document.documentElement;
+  const req = el.requestFullscreen || el.webkitRequestFullscreen || el.webkitRequestFullScreen;
+  if (req) { try { const r = req.call(el); if (r && r.catch) r.catch(() => {}); } catch {} }
+}
+function exitFullscreen() {
+  if (!(document.fullscreenElement || document.webkitFullscreenElement)) return;
+  const ex = document.exitFullscreen || document.webkitExitFullscreen;
+  if (ex) { try { const r = ex.call(document); if (r && r.catch) r.catch(() => {}); } catch {} }
+}
 
 /* haptics: navigator.vibrate on Android; hidden <input switch> on iOS 17.4+ */
 let hapticEl = null;
@@ -440,11 +526,12 @@ function openSheet(patternId) {
     store.sound = !store.sound;
     scrim.querySelector(".switch").setAttribute("aria-checked", store.sound);
     scrim.querySelector("#sndlabel").textContent = store.sound ? "Sound & haptics on" : "Sound & haptics off";
-    if (store.sound) { tone(396, 0.4); haptic(1); }
+    if (store.sound) { Snd.unlock(); Snd.chime([Snd.scale[3]], 0.06); haptic(1); }
   });
 
   scrim.querySelector(".sheet__begin").addEventListener("click", () => {
-    if (store.sound) { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); actx.resume?.(); }
+    Snd.unlock();           // unlock audio inside the user gesture (iOS)
+    enterFullscreen();      // request true full screen inside the gesture
     close();
     startSession(sheetState.patternId, sheetState.value);
   });
@@ -551,7 +638,7 @@ function startSession(patternId, value) {
       session.lastKey = key;
       phaseEl.textContent = ph.label === "Top-up" ? "Top up" : ph.label;
       ringsBox.classList.toggle("holding", ph.label === "Hold");
-      CUE[ph.label.split(" ")[0]]?.();
+      if (ph.secs >= 1.8) CUE[ph.label.split(" ")[0]]?.(); // skip bowls/chimes on very fast paces (e.g. Breath of Fire) — pad carries it
       haptic(1);
     }
     paint(ph.from, ph.to, ph.secs ? into / ph.secs : 1);
@@ -569,6 +656,7 @@ function startSession(patternId, value) {
     if (n <= 0) {
       clearInterval(session.cd); session.cd = 0;
       ready.style.display = "none";
+      Snd.startAmbient();
       session.t0 = performance.now();
       session.tick = setInterval(step, TICK_MS);
       step();
@@ -595,12 +683,13 @@ function clearSession() {
   clearInterval(session.tick);
   clearInterval(session.cd);
 }
-function endSession(el) { clearSession(); el.remove(); session = null; render(current); }
+function endSession(el) { clearSession(); Snd.stopAmbient(); exitFullscreen(); el.remove(); session = null; render(current); }
 
 function finishSession(el, p, totalSec) {
   clearSession();
+  Snd.stopAmbient();
   store.log(p.id, totalSec);
-  tone(330, 0.5); setTimeout(() => tone(440, 0.7), 220);
+  Snd.complete();
   haptic(3);
   const st = stats();
 
@@ -619,7 +708,7 @@ function finishSession(el, p, totalSec) {
   el.querySelector(".session__stage").replaceChildren(done);
   el.querySelector(".session__foot").style.display = "none";
   el.querySelector(".session__bar").style.opacity = "0";
-  done.querySelector(".complete__btn").addEventListener("click", () => { el.remove(); session = null; render("home"); });
+  done.querySelector(".complete__btn").addEventListener("click", () => { exitFullscreen(); el.remove(); session = null; render("home"); });
 }
 
 /* ---------- helpers ---------- */
