@@ -72,84 +72,84 @@ const UI = {
    labels: Inhale | Exhale | Hold | Top-up. unit: 'min' (timed) | 'breaths' (cycles).
    See breathe-pattern-spec for sourcing (HeartMath, Weil, Huberman, Breathwrk). */
 const PATTERNS = [
-  { id: "energy", name: "Energy", technique: "Energizing breath", group: "morning", icon: "energy", color: "#9a4a38",
+  { id: "energy", name: "Energy", technique: "Energizing breath", group: "energize", icon: "energy", color: "#9a4a38", rhythm: "4 · 2",
     desc: "A longer inhale to lift energy and alertness.",
     guidance: "Breathe in longer than you breathe out to raise alertness. Sit upright, and ease off if you feel light-headed.",
     caveat: "Best seated or lying down. Skip if pregnant or prone to dizziness.",
     phases: [["Inhale", 4], ["Exhale", 2]], unit: "min", options: [1, 2, 3], default: 2 },
 
-  { id: "creativity", name: "Creativity", technique: "Open awareness", group: "morning", icon: "creativity", color: "#6e7e86",
+  { id: "creativity", name: "Creativity", technique: "Open awareness", group: "center", icon: "creativity", color: "#6e7e86", rhythm: "4 · 2 · 6 · 2",
     desc: "A spacious, even rhythm to open the mind.",
     guidance: "An even, spacious rhythm with gentle pauses. Let the mind wander and make connections.",
     phases: [["Inhale", 4], ["Hold", 2], ["Exhale", 6], ["Hold", 2]], unit: "min", options: [2, 4, 6], default: 4 },
 
-  { id: "balance", name: "Balance", technique: "Coherence · 5.5 bpm", group: "anytime", icon: "balance", color: "#6e7b5b",
+  { id: "balance", name: "Balance", technique: "Coherent breathing", group: "center", icon: "balance", color: "#6e7b5b", rhythm: "5.5 · 5.5",
     desc: "Resonant breathing for calm, steady balance.",
     guidance: "Smooth and even, with no holds. Equal in and out at the body's resonant pace settles the nervous system and lifts heart-rate variability.",
     phases: [["Inhale", 5.5], ["Exhale", 5.5]], unit: "min", options: [2, 5, 10], default: 5 },
 
-  { id: "focus", name: "Focus", technique: "Box breathing · 4-4-4-4", group: "anytime", icon: "focus", color: "#401e01",
+  { id: "focus", name: "Focus", technique: "Box breathing", group: "center", icon: "focus", color: "#401e01", rhythm: "4 · 4 · 4 · 4",
     desc: "Equal box breathing to steady attention.",
     guidance: "Equal counts on all four sides of the box. Keep the holds relaxed, never strained.",
     phases: [["Inhale", 4], ["Hold", 4], ["Exhale", 4], ["Hold", 4]], unit: "min", options: [2, 4, 8], default: 4 },
 
-  { id: "unwind", name: "Unwind", technique: "Extended exhale · 4-6", group: "anytime", icon: "unwind", color: "#5a4632",
+  { id: "unwind", name: "Unwind", technique: "Extended exhale", group: "soothe", icon: "unwind", color: "#5a4632", rhythm: "4 · 6",
     desc: "A longer exhale to gently let go.",
     guidance: "Let the out-breath be longer than the in-breath. Soften the jaw and shoulders as you exhale.",
     phases: [["Inhale", 4], ["Exhale", 6]], unit: "min", options: [2, 5, 10], default: 5 },
 
-  { id: "reset", name: "Reset", technique: "Physiological sigh", group: "anytime", icon: "reset", color: "#5c6e72",
+  { id: "reset", name: "Reset", technique: "Physiological sigh", group: "soothe", icon: "reset", color: "#5c6e72", rhythm: "In · sip · out",
     desc: "A double inhale and long exhale to reset fast.",
     guidance: "Inhale fully through the nose, then sip in a little more air, then a long, slow exhale through the mouth.",
     phases: [["Inhale", 3, 0.8], ["Top-up", 1.8, 1], ["Exhale", 6.5, 0.42]], unit: "min", options: [1, 3, 5], default: 3 },
 
-  { id: "calm", name: "Calm", technique: "4-7-8 breath", group: "evening", icon: "calm", color: "#716050",
+  { id: "calm", name: "Calm", technique: "Relaxing breath", group: "rest", icon: "calm", color: "#716050", rhythm: "4 · 7 · 8",
     desc: "Dr. Weil's relaxing breath for stress and sleep.",
     guidance: "Inhale quietly through the nose for four, hold for seven, then exhale through the mouth with a soft whoosh for eight. Four breaths is one round.",
     phases: [["Inhale", 4], ["Hold", 7], ["Exhale", 8]], unit: "breaths", options: [4, 8], default: 4 },
 
-  { id: "sleep", name: "Sleep", technique: "Wind-down", group: "evening", icon: "sleep", color: "#3a2415",
+  { id: "sleep", name: "Sleep", technique: "Wind-down", group: "rest", icon: "sleep", color: "#3a2415", rhythm: "4 · 2 · 8",
     desc: "A strong exhale bias to drift toward rest.",
     guidance: "A long, slow exhale carries you toward sleep. Keep everything loose and let go.",
     phases: [["Inhale", 4], ["Hold", 2], ["Exhale", 8]], unit: "min", options: [3, 5, 10], default: 5 },
 
   /* ---- Kundalini / pranayama (Open-inspired) ---- */
-  { id: "breathoffire", name: "Breath of Fire", technique: "Kapalabhati · paced", group: "morning", icon: "breathoffire", color: "#7e3a2b",
+  { id: "breathoffire", name: "Breath of Fire", technique: "Kapalabhati", group: "energize", icon: "breathoffire", color: "#7e3a2b", rhythm: "Rapid · even",
     desc: "A rhythmic pumping breath to build heat and energy.",
     guidance: "Equal, rhythmic breaths through the nose, the belly pumping with each one. A light snap out on the exhale; let the inhale fall in on its own. Steady, not frantic.",
     caveat: "Stop if light-headed. Avoid if pregnant, or with high blood pressure, heart disease, epilepsy, GERD, or recent abdominal surgery.",
     phases: [["Inhale", 1], ["Exhale", 1]], unit: "breaths", options: [30, 60, 120], default: 30 },
 
-  { id: "longdeep", name: "Long Deep", technique: "Long deep breathing", group: "morning", icon: "longdeep", color: "#8a7866",
+  { id: "longdeep", name: "Long Deep", technique: "Long deep breathing", group: "energize", icon: "longdeep", color: "#8a7866", rhythm: "7 · 8",
     desc: "A slow three-part yogic breath — belly, ribs, chest.",
     guidance: "A slow, full wave: let the belly rise, then the ribs widen, then the chest lift. Exhale in reverse, long and smooth, through the nose.",
     phases: [["Inhale", 7], ["Exhale", 8]], unit: "min", options: [3, 5, 11], default: 5 },
 
-  { id: "nadishodhana", name: "Alternate Nostril", technique: "Nadi Shodhana · 4-4-4-4", group: "anytime", icon: "nadishodhana", color: "#5b7470",
+  { id: "nadishodhana", name: "Alternate Nostril", technique: "Nadi Shodhana", group: "center", icon: "nadishodhana", color: "#5b7470", rhythm: "4 · 4 · 4 · 4",
     desc: "Alternate-nostril breathing to balance and settle the mind.",
     guidance: "Close the right nostril with the thumb and breathe through the left; then switch and breathe through the right. Follow the prompts — let the hands keep the rhythm.",
     caveat: "Breathe gently, never strain the holds. Skip the holds if pregnant. Sit upright.",
     phases: [["Inhale L", 4], ["Hold", 4], ["Exhale R", 4], ["Inhale R", 4], ["Hold", 4], ["Exhale L", 4]], unit: "min", options: [2, 5, 10], default: 5 },
 
-  { id: "ujjayi", name: "Ocean Breath", technique: "Ujjayi · 5-5", group: "anytime", icon: "ujjayi", color: "#4e6468",
+  { id: "ujjayi", name: "Ocean Breath", technique: "Ujjayi", group: "soothe", icon: "ujjayi", color: "#4e6468", rhythm: "5 · 5",
     desc: "Whispering ocean breath with a gently constricted throat.",
     guidance: "Breathe through the nose with a soft constriction at the back of the throat, like fogging a mirror with your mouth closed. Listen for the quiet ocean sound, even in and out.",
     caveat: "Keep the throat soft, never forced. Ease off if it strains.",
     phases: [["Inhale", 5], ["Exhale", 5]], unit: "min", options: [2, 5, 10], default: 5 },
 
-  { id: "cooling", name: "Cooling Breath", technique: "Sitali · 4-4-6", group: "anytime", icon: "cooling", color: "#6e7e86",
+  { id: "cooling", name: "Cooling Breath", technique: "Sitali", group: "soothe", icon: "cooling", color: "#6e7e86", rhythm: "4 · 4 · 6",
     desc: "Curl the tongue and sip cool air to calm and cool down.",
     guidance: "Curl the tongue into a tube (or purse the lips) and sip cool air in through it. Close the mouth, hold briefly, then exhale slowly through the nose.",
     caveat: "Best in warm conditions. Skip if you feel chilled or congested.",
     phases: [["Inhale", 4], ["Hold", 4], ["Exhale", 6]], unit: "min", options: [2, 4, 6], default: 4 },
 
-  { id: "tripleratio", name: "Yogic Ratio", technique: "Pranayama · 1:2:2", group: "evening", icon: "tripleratio", color: "#5a4632",
+  { id: "tripleratio", name: "Yogic Ratio", technique: "Yogic ratio", group: "rest", icon: "tripleratio", color: "#5a4632", rhythm: "4 · 8 · 8",
     desc: "A traditional inhale–hold–exhale ratio for steady calm.",
     guidance: "Inhale for four, hold for eight, exhale for eight — a classic yogic ratio that lengthens the breath without strain.",
     caveat: "Keep the hold relaxed. Shorten or skip the hold if you feel any air-hunger.",
     phases: [["Inhale", 4], ["Hold", 8], ["Exhale", 8]], unit: "min", options: [2, 4, 6], default: 4 },
 
-  { id: "bhramari", name: "Humming Bee", technique: "Bhramari · hum", group: "evening", icon: "bhramari", color: "#7a5d6a",
+  { id: "bhramari", name: "Humming Bee", technique: "Bhramari", group: "rest", icon: "bhramari", color: "#7a5d6a", rhythm: "4 · 8",
     desc: "A long humming exhale to quiet an anxious mind.",
     guidance: "Inhale softly through the nose, then hum like a bee on a long, smooth exhale with the mouth closed. Feel the gentle vibration in the head and chest.",
     phases: [["Inhale", 4], ["Exhale", 8]], unit: "breaths", options: [6, 10, 15], default: 10 },
@@ -402,10 +402,14 @@ function Practice() {
     ? `You're on a <b>${st.streak}-day</b> streak. Welcome back.`
     : "Come home to yourself. A few mindful breaths is all it takes.";
 
-  const groups = { morning: "Morning", anytime: "Anytime", evening: "Evening" };
+  const groups = { energize: "Energize", center: "Center", soothe: "Soothe", rest: "Rest" };
   const row = (p) => `<button class="prow" data-pick="${p.id}" style="--c:${p.color}">
       <span class="prow__rail">${ICONS[p.icon]}</span>
-      <span class="prow__body"><span class="prow__name">${p.name}</span><span class="prow__tech">${p.technique}</span></span>
+      <span class="prow__body">
+        <span class="prow__name">${p.name}</span>
+        <span class="prow__tech">${p.technique}</span>
+        <span class="prow__rhythm">${p.rhythm}</span>
+      </span>
       <span class="prow__chev">${UI.chev}</span>
     </button>`;
   const library = Object.entries(groups).map(([k, label]) => {

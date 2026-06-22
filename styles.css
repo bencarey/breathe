@@ -128,6 +128,7 @@ img { display: block; }
 .prow__body { flex: 1; min-width: 0; padding: var(--s4) var(--s5); display: flex; flex-direction: column; gap: 5px; justify-content: center; }
 .prow__name { font-family: var(--font-display); font-weight: 300; text-transform: uppercase; letter-spacing: 0.045em; font-size: 1.4rem; line-height: 1.05; }
 .prow__tech { font-size: 0.78rem; color: var(--ink-3); letter-spacing: 0.02em; }
+.prow__rhythm { font-size: 0.72rem; color: var(--ink-4); font-variant-numeric: tabular-nums; letter-spacing: 0.1em; margin-top: 2px; }
 .prow__chev { flex: none; display: grid; place-items: center; padding-right: var(--s5); color: var(--ink-4); }
 
 /* =========================================================================
