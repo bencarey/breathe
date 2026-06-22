@@ -645,12 +645,12 @@ function startSession(patternId, value) {
     let idx = 0; for (let i = 0; i < phases.length; i++) { if (t < offs[i] + phases[i].secs) { idx = i; break; } }
     const ph = phases[idx];
     const into = t - offs[idx];
+    const base = ph.label.split(" ")[0];
     const key = Math.floor(e / cycleDur) * 100 + idx;
     if (key !== session.lastKey) {       // crossed into a new phase
       session.lastKey = key;
       phaseEl.textContent = ph.label === "Top-up" ? "Top up" : ph.label;
       ringsBox.classList.toggle("holding", ph.label === "Hold");
-      const base = ph.label.split(" ")[0];
       Snd.breath(base, ph.secs);             // audible breath that follows the pace (in, out, sip, sigh)
       if (ph.secs >= 1.8) Snd.accent(base);  // soft chime/bowl on top (skip on very fast paces)
       haptic(1);
@@ -659,9 +659,14 @@ function startSession(patternId, value) {
       session.lastCount = -1;
       trackEl.innerHTML = Array.from({ length: session.trackN }, (_, i) => `<span class="ct">${session.trackN - i}</span>`).join("");
     }
-    // motion — delay the sip on the physiological-sigh top-up so it doesn't rush
+    // motion — natural turnaround pauses, like true breath: a brief settle at the
+    // top of the inhale (end-inspiratory pause) and a slightly longer one at the
+    // bottom of the exhale (end-expiratory pause). The breath reaches its target
+    // a little early and rests before reversing. Durations/counts are unchanged.
     let p01 = ph.secs ? into / ph.secs : 1;
-    if (ph.label === "Top-up") p01 = clamp01((p01 - 0.42) / 0.58);
+    if (ph.label === "Top-up") p01 = clamp01((p01 - 0.42) / 0.58);   // sip waits, then rises
+    else if (base === "Inhale") p01 = clamp01(p01 / 0.9);            // ~10% rest at the top
+    else if (base === "Exhale") p01 = clamp01(p01 / 0.84);           // ~16% rest at the bottom
     paint(ph.from, ph.to, p01);
     // advance the count-track marker
     const cur = Math.max(1, Math.ceil(ph.secs - into - 0.001));
