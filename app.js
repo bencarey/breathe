@@ -418,7 +418,12 @@ function Practice() {
   const now = new Date();
   const hr = now.getHours();
   const greet = hr < 12 ? "Good morning" : hr < 18 ? "Good afternoon" : "Good evening";
-  const featured = hr < 12 ? byId("energy") : hr >= 18 ? byId("sleep") : byId("balance");
+  // recommended: time-of-day pool, rotated daily (stable within a day, not on reload)
+  const pool = hr < 12 ? ["energy", "longdeep", "creativity"]
+    : hr < 18 ? ["balance", "focus", "nadishodhana", "reset"]
+    : ["sleep", "calm", "unwind", "bhramari"];
+  const doy = Math.floor((Date.now() - new Date(now.getFullYear(), 0, 0)) / 86400000);
+  const featured = byId(pool[doy % pool.length]);
   const st = stats();
   const dateStr = now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
   const status = st.streak > 0
@@ -683,8 +688,10 @@ function startSession(patternId, value) {
       haptic(1);
       // build the count track for this phase — shows where you are and what's next.
       // long holds (e.g. Wim Hof retention) use a single big countdown, not 60 pips.
-      session.trackN = Math.max(1, Math.ceil(ph.secs - 0.001));
       session.bigCount = ph.secs > 10;
+      // pip count uses evenly-spaced ticks (round, not ceil) so the first one
+      // isn't a sliver on half-second phases like 5.5; big countdown is per-second.
+      session.trackN = Math.max(1, session.bigCount ? Math.ceil(ph.secs - 0.001) : Math.round(ph.secs));
       session.lastCount = -1;
       trackEl.innerHTML = session.bigCount
         ? `<span class="ct ct--on ct--big"></span>`
@@ -699,8 +706,10 @@ function startSession(patternId, value) {
     else if (base === "Inhale") p01 = clamp01(p01 / 0.9);            // ~10% rest at the top
     else if (base === "Exhale") p01 = clamp01(p01 / 0.84);           // ~16% rest at the bottom
     paint(ph.from, ph.to, p01);
-    // advance the count-track marker
-    const cur = Math.max(1, Math.ceil(ph.secs - into - 0.001));
+    // advance the count-track marker (even ticks for pips; per-second for big holds)
+    const cur = session.bigCount
+      ? Math.max(1, Math.ceil(ph.secs - into - 0.001))
+      : Math.max(1, session.trackN - Math.floor((into * session.trackN) / ph.secs));
     if (cur !== session.lastCount) {
       session.lastCount = cur;
       if (session.bigCount) {
