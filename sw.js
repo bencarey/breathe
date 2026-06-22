@@ -1,5 +1,5 @@
 /* breathe. service worker — cache-first for full offline use */
-const CACHE = "breathe-v19";
+const CACHE = "breathe-v20";
 const ASSETS = [
   "./",
   "./index.html",

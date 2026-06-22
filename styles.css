@@ -192,7 +192,13 @@ img { display: block; }
 
 .session__label { position: relative; z-index: 2; text-align: center; pointer-events: none; }
 .session__phase { font-family: var(--font-display); font-weight: 300; text-transform: uppercase; letter-spacing: 0.12em; font-size: 2.4rem; }
-.session__count { font-size: 0.85rem; color: rgba(243, 236, 227, 0.55); margin-top: 10px; font-variant-numeric: tabular-nums; letter-spacing: 0.18em; }
+/* count track — shows the phase's counts with a marker on where you are + what's next */
+.count-track { display: flex; justify-content: center; gap: 16px; margin-top: 16px; font-variant-numeric: tabular-nums; min-height: 1.4em; }
+.ct { font-size: 1.05rem; line-height: 1; letter-spacing: 0.04em; position: relative; color: rgba(243, 236, 227, 0.16); transition: color 0.3s var(--ease); }
+.ct--past { color: rgba(243, 236, 227, 0.18); }
+.ct--next { color: rgba(243, 236, 227, 0.5); }
+.ct--on { color: var(--creme); }
+.ct--on::after { content: ""; position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 999px; background: var(--creme); }
 
 .session__foot { z-index: 3; text-align: center; }
 .session__progress { width: 64%; max-width: 240px; height: 1.5px; margin: 0 auto var(--s4); background: rgba(243, 236, 227, 0.2); border-radius: 999px; overflow: hidden; }

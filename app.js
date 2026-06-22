@@ -101,7 +101,7 @@ const PATTERNS = [
   { id: "reset", name: "Reset", technique: "Physiological sigh", group: "anytime", icon: "reset", color: "#5c6e72",
     desc: "A double inhale and long exhale to reset fast.",
     guidance: "Inhale fully through the nose, then sip in a little more air, then a long, slow exhale through the mouth.",
-    phases: [["Inhale", 2, 0.8], ["Top-up", 1, 1], ["Exhale", 6, 0.42]], unit: "min", options: [1, 3, 5], default: 3 },
+    phases: [["Inhale", 3, 0.8], ["Top-up", 1.8, 1], ["Exhale", 6.5, 0.42]], unit: "min", options: [1, 3, 5], default: 3 },
 
   { id: "calm", name: "Calm", technique: "4-7-8 breath", group: "evening", icon: "calm", color: "#716050",
     desc: "Dr. Weil's relaxing breath for stress and sleep.",
@@ -321,10 +321,12 @@ const Snd = {
       g.linearRampToValueAtTime(0.3, t + secs * 0.55);
       g.linearRampToValueAtTime(0.04, t + secs);
       f.setValueAtTime(480, t); f.exponentialRampToValueAtTime(1150, t + secs);
-    } else if (type === "Top-up") {          // quiet sip
-      g.linearRampToValueAtTime(0.36, t + Math.min(0.3, secs * 0.45));
+    } else if (type === "Top-up") {          // settle at the top of the inhale, then a gentle sip
+      const sipAt = secs * 0.42;
+      g.linearRampToValueAtTime(0.05, t + sipAt);                                  // hold quiet at the top
+      g.linearRampToValueAtTime(0.34, t + sipAt + Math.min(0.45, secs * 0.32));    // the sip
       g.linearRampToValueAtTime(0.03, t + secs);
-      f.setValueAtTime(1050, t); f.exponentialRampToValueAtTime(1500, t + secs);
+      f.setValueAtTime(700, t); f.exponentialRampToValueAtTime(1400, t + secs);
     } else if (type === "Exhale") {          // long sighing release, darken
       g.linearRampToValueAtTime(0.27, t + secs * 0.28);
       g.linearRampToValueAtTime(0.0001, t + secs);
@@ -602,7 +604,7 @@ function startSession(patternId, value) {
       <div class="rings">${ringsHTML}</div>
       <div class="session__label">
         <div class="session__phase">Get ready</div>
-        <div class="session__count"></div>
+        <div class="count-track"></div>
       </div>
       <div class="ready"><div><div class="ready__n">3</div><div class="ready__hint">Find a comfortable position</div></div></div>
     </div>
@@ -617,7 +619,7 @@ function startSession(patternId, value) {
   const ringEls = el.querySelectorAll(".ring");
   const ringsBox = el.querySelector(".rings");
   const phaseEl = el.querySelector(".session__phase");
-  const countEl = el.querySelector(".session__count");
+  const trackEl = el.querySelector(".count-track");
   const progEl = el.querySelector(".session__progress > i");
   const timeEl = el.querySelector(".session__time");
   const pauseBtn = el.querySelector("[data-pause]");
@@ -652,9 +654,22 @@ function startSession(patternId, value) {
       Snd.breath(base, ph.secs);             // audible breath that follows the pace (in, out, sip, sigh)
       if (ph.secs >= 1.8) Snd.accent(base);  // soft chime/bowl on top (skip on very fast paces)
       haptic(1);
+      // build the count track for this phase — shows where you are and what's next
+      session.trackN = Math.max(1, Math.ceil(ph.secs - 0.001));
+      session.lastCount = -1;
+      trackEl.innerHTML = Array.from({ length: session.trackN }, (_, i) => `<span class="ct">${session.trackN - i}</span>`).join("");
     }
-    paint(ph.from, ph.to, ph.secs ? into / ph.secs : 1);
-    countEl.textContent = Math.max(1, Math.ceil(ph.secs - into - 0.001));
+    // motion — delay the sip on the physiological-sigh top-up so it doesn't rush
+    let p01 = ph.secs ? into / ph.secs : 1;
+    if (ph.label === "Top-up") p01 = clamp01((p01 - 0.42) / 0.58);
+    paint(ph.from, ph.to, p01);
+    // advance the count-track marker
+    const cur = Math.max(1, Math.ceil(ph.secs - into - 0.001));
+    if (cur !== session.lastCount) {
+      session.lastCount = cur;
+      const aidx = session.trackN - cur, kids = trackEl.children;
+      for (let i = 0; i < kids.length; i++) kids[i].className = "ct" + (i < aidx ? " ct--past" : i === aidx ? " ct--on" : " ct--next");
+    }
     progEl.style.width = Math.min(100, (e / totalSec) * 100) + "%";
     timeEl.textContent = fmt(Math.max(0, totalSec - e));
   }
