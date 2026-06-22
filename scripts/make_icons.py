@@ -8,8 +8,8 @@ from PIL import Image, ImageDraw
 OUT = os.path.join(os.path.dirname(__file__), "..", "icons")
 os.makedirs(OUT, exist_ok=True)
 
-BG = (10, 10, 11)          # near-black ground
-RING = (245, 245, 247)     # soft white
+BG = (243, 236, 227)        # creme ground
+RING = (64, 30, 1)          # espresso
 SS = 4                     # supersample for crisp anti-aliased rings
 
 

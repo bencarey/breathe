@@ -1,5 +1,5 @@
 /* breathe. service worker — cache-first for full offline use */
-const CACHE = "breathe-v17";
+const CACHE = "breathe-v18";
 const ASSETS = [
   "./",
   "./index.html",
@@ -10,6 +10,10 @@ const ASSETS = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/apple-touch-icon.png",
+  "./assets/fonts/Piloner-Thin.otf",
+  "./assets/fonts/NostalgiaPeachcreme.otf",
+  "./assets/img/tyl-horizontal-espresso.png",
+  "./assets/img/tyl-ambiance-moody.png",
 ];
 
 self.addEventListener("install", (e) => {

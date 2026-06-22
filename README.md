@@ -1,15 +1,6 @@
 # breathe.
 
-A beautifully simple breathwork PWA. Monochrome, calm, installable to your
-iPhone home screen. Inspired by the Stoic and Walden design language.
-
-No build step, no dependencies. Plain HTML + CSS + a single JS module.
-
-Quiet modern minimalism — a Japandi / wabi-sabi remix: warm rice-paper ground,
-an elegant serif (Instrument Serif) reserved for the few display moments over a
-light grotesque, a whisper of paper grain, restrained geometric icon marks, and
-a session that blooms into each pattern's muted natural color with delicate
-rippling concentric rings. Influences: Japandi, wabi-sabi, Eames, Maeda, Mies.
+Branded for **The Yoga Loft** — warm quiet-luxury: espresso ink on creme, Piloner Thin uppercase display, Inter body, a Nostalgia script accent, soft warm shadow, photographic deep-shadow mood. Inspired by Shou Sugi Ban House and Walden. Home and Explore are unified into one **Practice** screen; History is now **Journey**.
 
 ## Features
 - Eight research-backed patterns, each with its own identity color:

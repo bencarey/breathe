@@ -72,84 +72,84 @@ const UI = {
    labels: Inhale | Exhale | Hold | Top-up. unit: 'min' (timed) | 'breaths' (cycles).
    See breathe-pattern-spec for sourcing (HeartMath, Weil, Huberman, Breathwrk). */
 const PATTERNS = [
-  { id: "energy", name: "Energy", technique: "Energizing breath", group: "morning", icon: "energy", color: "#ec5a2e",
+  { id: "energy", name: "Energy", technique: "Energizing breath", group: "morning", icon: "energy", color: "#9a4a38",
     desc: "A longer inhale to lift energy and alertness.",
     guidance: "Breathe in longer than you breathe out to raise alertness. Sit upright, and ease off if you feel light-headed.",
     caveat: "Best seated or lying down. Skip if pregnant or prone to dizziness.",
     phases: [["Inhale", 4], ["Exhale", 2]], unit: "min", options: [1, 2, 3], default: 2 },
 
-  { id: "creativity", name: "Creativity", technique: "Open awareness", group: "morning", icon: "creativity", color: "#2e27e6",
+  { id: "creativity", name: "Creativity", technique: "Open awareness", group: "morning", icon: "creativity", color: "#6e7e86",
     desc: "A spacious, even rhythm to open the mind.",
     guidance: "An even, spacious rhythm with gentle pauses. Let the mind wander and make connections.",
     phases: [["Inhale", 4], ["Hold", 2], ["Exhale", 6], ["Hold", 2]], unit: "min", options: [2, 4, 6], default: 4 },
 
-  { id: "balance", name: "Balance", technique: "Coherence · 5.5 bpm", group: "anytime", icon: "balance", color: "#1f8e7d",
+  { id: "balance", name: "Balance", technique: "Coherence · 5.5 bpm", group: "anytime", icon: "balance", color: "#6e7b5b",
     desc: "Resonant breathing for calm, steady balance.",
     guidance: "Smooth and even, with no holds. Equal in and out at the body's resonant pace settles the nervous system and lifts heart-rate variability.",
     phases: [["Inhale", 5.5], ["Exhale", 5.5]], unit: "min", options: [2, 5, 10], default: 5 },
 
-  { id: "focus", name: "Focus", technique: "Box breathing · 4-4-4-4", group: "anytime", icon: "focus", color: "#16161a",
+  { id: "focus", name: "Focus", technique: "Box breathing · 4-4-4-4", group: "anytime", icon: "focus", color: "#401e01",
     desc: "Equal box breathing to steady attention.",
     guidance: "Equal counts on all four sides of the box. Keep the holds relaxed, never strained.",
     phases: [["Inhale", 4], ["Hold", 4], ["Exhale", 4], ["Hold", 4]], unit: "min", options: [2, 4, 8], default: 4 },
 
-  { id: "unwind", name: "Unwind", technique: "Extended exhale · 4-6", group: "anytime", icon: "unwind", color: "#c2562f",
+  { id: "unwind", name: "Unwind", technique: "Extended exhale · 4-6", group: "anytime", icon: "unwind", color: "#5a4632",
     desc: "A longer exhale to gently let go.",
     guidance: "Let the out-breath be longer than the in-breath. Soften the jaw and shoulders as you exhale.",
     phases: [["Inhale", 4], ["Exhale", 6]], unit: "min", options: [2, 5, 10], default: 5 },
 
-  { id: "reset", name: "Reset", technique: "Physiological sigh", group: "anytime", icon: "reset", color: "#2f8fb0",
+  { id: "reset", name: "Reset", technique: "Physiological sigh", group: "anytime", icon: "reset", color: "#5c6e72",
     desc: "A double inhale and long exhale to reset fast.",
     guidance: "Inhale fully through the nose, then sip in a little more air, then a long, slow exhale through the mouth.",
     phases: [["Inhale", 2, 0.8], ["Top-up", 1, 1], ["Exhale", 6, 0.42]], unit: "min", options: [1, 3, 5], default: 3 },
 
-  { id: "calm", name: "Calm", technique: "4-7-8 breath", group: "evening", icon: "calm", color: "#6a4a8c",
+  { id: "calm", name: "Calm", technique: "4-7-8 breath", group: "evening", icon: "calm", color: "#716050",
     desc: "Dr. Weil's relaxing breath for stress and sleep.",
     guidance: "Inhale quietly through the nose for four, hold for seven, then exhale through the mouth with a soft whoosh for eight. Four breaths is one round.",
     phases: [["Inhale", 4], ["Hold", 7], ["Exhale", 8]], unit: "breaths", options: [4, 8], default: 4 },
 
-  { id: "sleep", name: "Sleep", technique: "Wind-down", group: "evening", icon: "sleep", color: "#2b2e6e",
+  { id: "sleep", name: "Sleep", technique: "Wind-down", group: "evening", icon: "sleep", color: "#3a2415",
     desc: "A strong exhale bias to drift toward rest.",
     guidance: "A long, slow exhale carries you toward sleep. Keep everything loose and let go.",
     phases: [["Inhale", 4], ["Hold", 2], ["Exhale", 8]], unit: "min", options: [3, 5, 10], default: 5 },
 
   /* ---- Kundalini / pranayama (Open-inspired) ---- */
-  { id: "breathoffire", name: "Breath of Fire", technique: "Kapalabhati · paced", group: "morning", icon: "breathoffire", color: "#c0392b",
+  { id: "breathoffire", name: "Breath of Fire", technique: "Kapalabhati · paced", group: "morning", icon: "breathoffire", color: "#7e3a2b",
     desc: "A rhythmic pumping breath to build heat and energy.",
     guidance: "Equal, rhythmic breaths through the nose, the belly pumping with each one. A light snap out on the exhale; let the inhale fall in on its own. Steady, not frantic.",
     caveat: "Stop if light-headed. Avoid if pregnant, or with high blood pressure, heart disease, epilepsy, GERD, or recent abdominal surgery.",
     phases: [["Inhale", 1], ["Exhale", 1]], unit: "breaths", options: [30, 60, 120], default: 30 },
 
-  { id: "longdeep", name: "Long Deep", technique: "Long deep breathing", group: "morning", icon: "longdeep", color: "#9a7b3f",
+  { id: "longdeep", name: "Long Deep", technique: "Long deep breathing", group: "morning", icon: "longdeep", color: "#8a7866",
     desc: "A slow three-part yogic breath — belly, ribs, chest.",
     guidance: "A slow, full wave: let the belly rise, then the ribs widen, then the chest lift. Exhale in reverse, long and smooth, through the nose.",
     phases: [["Inhale", 7], ["Exhale", 8]], unit: "min", options: [3, 5, 11], default: 5 },
 
-  { id: "nadishodhana", name: "Alternate Nostril", technique: "Nadi Shodhana · 4-4-4-4", group: "anytime", icon: "nadishodhana", color: "#3f7e9c",
+  { id: "nadishodhana", name: "Alternate Nostril", technique: "Nadi Shodhana · 4-4-4-4", group: "anytime", icon: "nadishodhana", color: "#5b7470",
     desc: "Alternate-nostril breathing to balance and settle the mind.",
     guidance: "Close the right nostril with the thumb and breathe through the left; then switch and breathe through the right. Follow the prompts — let the hands keep the rhythm.",
     caveat: "Breathe gently, never strain the holds. Skip the holds if pregnant. Sit upright.",
     phases: [["Inhale L", 4], ["Hold", 4], ["Exhale R", 4], ["Inhale R", 4], ["Hold", 4], ["Exhale L", 4]], unit: "min", options: [2, 5, 10], default: 5 },
 
-  { id: "ujjayi", name: "Ocean Breath", technique: "Ujjayi · 5-5", group: "anytime", icon: "ujjayi", color: "#2f6f73",
+  { id: "ujjayi", name: "Ocean Breath", technique: "Ujjayi · 5-5", group: "anytime", icon: "ujjayi", color: "#4e6468",
     desc: "Whispering ocean breath with a gently constricted throat.",
     guidance: "Breathe through the nose with a soft constriction at the back of the throat, like fogging a mirror with your mouth closed. Listen for the quiet ocean sound, even in and out.",
     caveat: "Keep the throat soft, never forced. Ease off if it strains.",
     phases: [["Inhale", 5], ["Exhale", 5]], unit: "min", options: [2, 5, 10], default: 5 },
 
-  { id: "cooling", name: "Cooling Breath", technique: "Sitali · 4-4-6", group: "anytime", icon: "cooling", color: "#2f8fa0",
+  { id: "cooling", name: "Cooling Breath", technique: "Sitali · 4-4-6", group: "anytime", icon: "cooling", color: "#6e7e86",
     desc: "Curl the tongue and sip cool air to calm and cool down.",
     guidance: "Curl the tongue into a tube (or purse the lips) and sip cool air in through it. Close the mouth, hold briefly, then exhale slowly through the nose.",
     caveat: "Best in warm conditions. Skip if you feel chilled or congested.",
     phases: [["Inhale", 4], ["Hold", 4], ["Exhale", 6]], unit: "min", options: [2, 4, 6], default: 4 },
 
-  { id: "tripleratio", name: "Yogic Ratio", technique: "Pranayama · 1:2:2", group: "evening", icon: "tripleratio", color: "#4a4f7a",
+  { id: "tripleratio", name: "Yogic Ratio", technique: "Pranayama · 1:2:2", group: "evening", icon: "tripleratio", color: "#5a4632",
     desc: "A traditional inhale–hold–exhale ratio for steady calm.",
     guidance: "Inhale for four, hold for eight, exhale for eight — a classic yogic ratio that lengthens the breath without strain.",
     caveat: "Keep the hold relaxed. Shorten or skip the hold if you feel any air-hunger.",
     phases: [["Inhale", 4], ["Hold", 8], ["Exhale", 8]], unit: "min", options: [2, 4, 6], default: 4 },
 
-  { id: "bhramari", name: "Humming Bee", technique: "Bhramari · hum", group: "evening", icon: "bhramari", color: "#5a4a8c",
+  { id: "bhramari", name: "Humming Bee", technique: "Bhramari · hum", group: "evening", icon: "bhramari", color: "#7a5d6a",
     desc: "A long humming exhale to quiet an anxious mind.",
     guidance: "Inhale softly through the nose, then hum like a bee on a long, smooth exhale with the mouth closed. Feel the gentle vibration in the head and chest.",
     phases: [["Inhale", 4], ["Exhale", 8]], unit: "breaths", options: [6, 10, 15], default: 10 },
@@ -361,128 +361,79 @@ const tabbar = document.getElementById("tabbar");
 const h = (html) => { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstElementChild; };
 
 /* ======================= SCREENS ======================= */
-let current = "home";
+let current = "practice";
 
 function render(route = current) {
   current = route;
   document.documentElement.style.removeProperty("--c");
   document.body.style.background = "var(--ground)";
-  if (route === "home") app.replaceChildren(Home());
-  if (route === "explore") app.replaceChildren(Explore());
-  if (route === "history") app.replaceChildren(History());
+  if (route === "practice") app.replaceChildren(Practice());
+  if (route === "journey") app.replaceChildren(Journey());
   renderTabs();
   window.scrollTo(0, 0);
 }
 
 function renderTabs() {
   tabbar.hidden = false;
-  const tab = (id, label, icon) => `<button class="tab" data-route="${id}" aria-current="${current === id}">${icon}<span>${label}</span></button>`;
-  tabbar.innerHTML = tab("home", "Today", UI.home) + tab("explore", "Explore", UI.explore) + tab("history", "History", UI.history);
+  const tab = (id, label) => `<button class="tab" data-route="${id}" aria-current="${current === id}">${label}</button>`;
+  tabbar.innerHTML = tab("practice", "Practice") + tab("journey", "Journey");
   tabbar.querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => render(b.dataset.route)));
 }
 
-const rhythm = (p) => p.phases.map(([, s]) => (Number.isInteger(s) ? s : s.toFixed(1))).join("-");
-
-/* ----- Home ----- */
-function Home() {
+/* ----- Practice (recommended + full library, unified) ----- */
+function Practice() {
   const now = new Date();
   const hr = now.getHours();
-  const part = hr < 12 ? "morning" : hr < 18 ? "afternoon" : "evening";
   const greet = hr < 12 ? "Good morning" : hr < 18 ? "Good afternoon" : "Good evening";
-  const featured = part === "morning" ? byId("energy") : part === "evening" ? byId("sleep") : byId("balance");
+  const featured = hr < 12 ? byId("energy") : hr >= 18 ? byId("sleep") : byId("balance");
   const st = stats();
   const dateStr = now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
-
-  const unit = (p) => (p.unit === "breaths" ? "breaths" : "min");
-  const recSpec = `${featured.technique} · ${featured.default} ${unit(featured)}`;
   const status = st.streak > 0
-    ? `${st.streak}-day streak · ${st.totalMin} min total`
-    : "A few mindful breaths is all it takes.";
+    ? `You're on a <b>${st.streak}-day</b> streak. Welcome back.`
+    : "Come home to yourself. A few mindful breaths is all it takes.";
 
   const groups = { morning: "Morning", anytime: "Anytime", evening: "Evening" };
-  const prow2row = (p) => `<button class="prow2" data-pick="${p.id}" style="--c:${p.color}">
-      <span class="prow2__tick"></span>
-      <span class="prow2__body"><span class="prow2__name">${p.name}</span><span class="prow2__spec">${p.technique}</span></span>
-      <span class="prow2__chev">${UI.chev}</span>
+  const row = (p) => `<button class="prow" data-pick="${p.id}" style="--c:${p.color}">
+      <span class="prow__rail">${ICONS[p.icon]}</span>
+      <span class="prow__body"><span class="prow__name">${p.name}</span><span class="prow__tech">${p.technique}</span></span>
+      <span class="prow__chev">${UI.chev}</span>
     </button>`;
-  const practicesHTML = Object.entries(groups).map(([k, label]) => {
+  const library = Object.entries(groups).map(([k, label]) => {
     const items = PATTERNS.filter((p) => p.group === k);
-    return `<div class="group-label">${label}</div><div class="plist">${items.map(prow2row).join("")}</div>`;
+    return `<div class="section-label"><span class="eyebrow eyebrow--rule">${label}</span></div><div class="plist">${items.map(row).join("")}</div>`;
   }).join("");
 
-  const el = h(`<main class="screen home">
-    <div class="home__head">
-      <div class="wordmark home__mark">breathe<span class="dot">.</span></div>
-      <div class="home__date">${dateStr}</div>
+  const el = h(`<main class="screen">
+    <div class="p-head">
+      <img class="p-logo" src="./assets/img/tyl-horizontal-espresso.png" alt="The Yoga Loft" />
+      <div class="p-date">${dateStr}</div>
     </div>
 
     <div class="greeting">
-      <div class="greeting__hi">${greet}.</div>
+      <div class="greeting__hi">${greet}</div>
       <div class="greeting__line">${status}</div>
     </div>
 
-    <button class="recommend" style="--c:${featured.color}">
-      <div class="eyebrow">Recommended now</div>
-      <div class="recommend__top">
-        <div class="recommend__name">${featured.name}</div>
-        <div class="recommend__mark">${ICONS[featured.icon]}</div>
+    <button class="hero" data-pick="${featured.id}">
+      <div class="hero__img" style="background-image:url('./assets/img/tyl-ambiance-moody.png')"></div>
+      <div class="hero__scrim"></div>
+      <div class="hero__body">
+        <span class="eyebrow eyebrow--rule hero__eyebrow">Recommended</span>
+        <div class="hero__name">${featured.name}</div>
+        <div class="hero__desc">${featured.desc}</div>
+        <span class="hero__btn">Begin breathing</span>
       </div>
-      <div class="recommend__spec">${recSpec}</div>
-      <span class="recommend__btn">Begin</span>
     </button>
 
-    <div class="home__stats">
-      <div class="hstat"><div class="hstat__val">${st.streak}</div><div class="hstat__label">Day streak</div></div>
-      <div class="hstat"><div class="hstat__val">${st.count}</div><div class="hstat__label">Sessions</div></div>
-      <div class="hstat"><div class="hstat__val">${st.totalMin}</div><div class="hstat__label">Minutes</div></div>
-    </div>
-
-    ${practicesHTML}
+    ${library}
   </main>`);
 
-  el.querySelector(".recommend").addEventListener("click", () => openSheet(featured.id));
   el.querySelectorAll("[data-pick]").forEach((b) => b.addEventListener("click", () => openSheet(b.dataset.pick)));
   return el;
 }
 
-function pcard(p) {
-  return `<button class="pcard" data-pcard="${p.id}" style="--c:${p.color}">
-    <div class="icon-tile">${ICONS[p.icon]}</div>
-    <div>
-      <div class="pcard__name">${p.name}</div>
-      <div class="pcard__meta">${rhythm(p)}</div>
-    </div>
-  </button>`;
-}
-
-/* ----- Explore ----- */
-function Explore() {
-  const groups = { morning: "Morning", anytime: "Anytime", evening: "Evening" };
-  const row = (p) => `<button class="prow" data-pattern="${p.id}" style="--c:${p.color}">
-      <div class="icon-tile">${ICONS[p.icon]}</div>
-      <div class="prow__body">
-        <div class="prow__name">${p.name}</div>
-        <div class="prow__desc">${p.desc}</div>
-        <div class="prow__pattern">${p.technique}</div>
-      </div>
-      <div class="prow__chev">${UI.chev}</div>
-    </button>`;
-  const sections = Object.entries(groups).map(([k, label]) => {
-    const items = PATTERNS.filter((p) => p.group === k);
-    return `<div class="group-label">${label}</div><div class="explore-list">${items.map(row).join("")}</div>`;
-  }).join("");
-  const el = h(`<main class="screen">
-    <div class="eyebrow">Breathing</div>
-    <h1 class="screen__title">Explore</h1>
-    <p class="screen__sub">Find the pattern that fits the moment. Each guides your breath at a different, research-backed rhythm.</p>
-    <div style="margin-top: var(--s5)">${sections}</div>
-  </main>`);
-  el.querySelectorAll("[data-pattern]").forEach((b) => b.addEventListener("click", () => openSheet(b.dataset.pattern)));
-  return el;
-}
-
-/* ----- History ----- */
-function History() {
+/* ----- Journey (history) ----- */
+function Journey() {
   const st = stats();
   const sessions = store.sessions.slice().reverse();
   const counts = {};
@@ -495,27 +446,27 @@ function History() {
   }
 
   const list = sessions.length
-    ? sessions.slice(0, 30).map((s) => {
-        const p = byId(s.patternId) || { name: "Session", icon: "calm", color: "#6c655a" };
+    ? sessions.slice(0, 40).map((s) => {
+        const p = byId(s.patternId) || { name: "Session", icon: "calm", color: "#716050" };
         return `<div class="log-row">
-          <div class="icon-tile" style="--c:${p.color}">${ICONS[p.icon] || ""}</div>
+          <div class="log-row__mark" style="--c:${p.color}">${ICONS[p.icon] || ""}</div>
           <div class="log-row__body"><div class="log-row__name">${p.name}</div><div class="log-row__when">${relTime(s.ts)}</div></div>
           <div class="log-row__dur">${Math.max(1, Math.round(s.durationSec / 60))} min</div>
         </div>`;
       }).join("")
-    : `<div class="empty">${ringsSVG("var(--line)")}<p>No sessions yet.<br/>Your practice will appear here.</p></div>`;
+    : `<div class="empty"><span class="script">your story begins here</span><p>Complete your first breath and it will appear here.</p></div>`;
 
   return h(`<main class="screen">
-    <div class="eyebrow">Your practice</div>
-    <h1 class="screen__title">History</h1>
-    <div class="streak" style="margin-top: var(--s6)">
-      <div class="streak__item"><div class="streak__val">${st.streak}</div><div class="streak__label">Day streak</div></div>
-      <div class="streak__item"><div class="streak__val">${st.count}</div><div class="streak__label">Sessions</div></div>
-      <div class="streak__item"><div class="streak__val">${st.totalMin}</div><div class="streak__label">Minutes</div></div>
+    <span class="eyebrow eyebrow--rule">Your practice</span>
+    <h1 class="screen__title">Journey</h1>
+    <div class="jstats">
+      <div class="jstat"><div class="jstat__v">${st.streak}</div><div class="jstat__l">Day streak</div></div>
+      <div class="jstat"><div class="jstat__v">${st.count}</div><div class="jstat__l">Sessions</div></div>
+      <div class="jstat"><div class="jstat__v">${st.totalMin}</div><div class="jstat__l">Minutes</div></div>
     </div>
-    <div class="group-label">Last 4 weeks</div>
+    <div class="section-label"><span class="eyebrow eyebrow--rule">Last 4 weeks</span></div>
     <div class="cal">${cells.join("")}</div>
-    <div class="group-label">Recent</div>
+    <div class="section-label"><span class="eyebrow eyebrow--rule">Recent</span></div>
     ${list}
   </main>`);
 }
@@ -549,9 +500,9 @@ function openSheet(patternId) {
           <span class="switch" role="switch" aria-checked="${store.sound}"></span>
         </div>
       </div>
-      <div class="sheet__hero">${ICONS[p.icon]}</div>
-      <div class="eyebrow sheet__eyebrow">${p.technique}</div>
-      <div class="wordmark sheet__title">${p.name.toLowerCase()}<span class="dot" style="color:${p.color}">.</span></div>
+      <div class="sheet__mark" style="--c:${p.color}">${ICONS[p.icon]}</div>
+      <div class="sheet__eyebrow"><span class="eyebrow">${p.technique}</span></div>
+      <div class="sheet__title">${p.name}</div>
       <p class="sheet__desc">${p.guidance}</p>
       <div class="durations">
         ${p.options.map((v) => `<button class="duration" data-val="${v}" aria-pressed="${v === p.default}">${v}<small>${unitLabel(v)}</small></button>`).join("")}
@@ -752,9 +703,9 @@ function finishSession(el, p, totalSec) {
   const st = stats();
 
   const done = h(`<div class="complete">
-    <div class="complete__mark">${UI.check}</div>
-    <div class="complete__title">Well done.</div>
-    <div class="complete__line">You completed ${Math.max(1, Math.round(totalSec / 60))} minutes of ${p.name.toLowerCase()} breathing.</div>
+    <div class="complete__script script">come home to yourself</div>
+    <div class="complete__title">${p.name} Complete</div>
+    <div class="complete__line">${Math.max(1, Math.round(totalSec / 60))} minutes of ${p.name.toLowerCase()} breathing. Progress, not perfection.</div>
     <div class="complete__stats">
       <div class="complete__stat"><div class="v">${st.streak}</div><div class="l">Day streak</div></div>
       <div class="complete__stat"><div class="v">${st.count}</div><div class="l">Sessions</div></div>
@@ -766,11 +717,11 @@ function finishSession(el, p, totalSec) {
   el.querySelector(".session__stage").replaceChildren(done);
   el.querySelector(".session__foot").style.display = "none";
   el.querySelector(".session__bar").style.opacity = "0";
-  done.querySelector(".complete__btn").addEventListener("click", () => { exitFullscreen(); el.remove(); session = null; render("home"); });
+  done.querySelector(".complete__btn").addEventListener("click", () => { exitFullscreen(); el.remove(); session = null; render("practice"); });
 }
 
 /* ---------- helpers ---------- */
 function fmt(sec) { sec = Math.max(0, Math.round(sec)); return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`; }
 
 /* ---------- boot ---------- */
-render("home");
+render("practice");
