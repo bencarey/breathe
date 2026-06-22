@@ -66,6 +66,10 @@
 html, body { height: 100%; background: var(--ground); color: var(--ink); overscroll-behavior: none; }
 body { -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
 body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1; background-image: var(--grain); background-size: 160px; opacity: 0.04; mix-blend-mode: multiply; }
+/* whisper-soft scrim in the status-bar safe area so the white iOS status icons
+   stay legible on the light screens. Sits below the dark session (which fills
+   the notch on its own), so it only shows where it's needed. */
+body::after { content: ""; position: fixed; top: 0; left: 0; right: 0; height: calc(var(--safe-top) + 8px); pointer-events: none; z-index: 60; background: linear-gradient(to bottom, rgba(40, 21, 2, 0.26), rgba(40, 21, 2, 0)); }
 button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
 img { display: block; }
 #app { min-height: 100%; }
