@@ -1,5 +1,5 @@
 /* breathe. service worker — cache-first for full offline use */
-const CACHE = "breathe-v18";
+const CACHE = "breathe-v19";
 const ASSETS = [
   "./",
   "./index.html",
@@ -13,7 +13,7 @@ const ASSETS = [
   "./assets/fonts/Piloner-Thin.otf",
   "./assets/fonts/NostalgiaPeachcreme.otf",
   "./assets/img/tyl-horizontal-espresso.png",
-  "./assets/img/tyl-ambiance-moody.png",
+  "./assets/img/hero.jpg",
 ];
 
 self.addEventListener("install", (e) => {

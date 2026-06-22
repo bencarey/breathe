@@ -274,10 +274,11 @@ const Snd = {
     // breath voice: looping noise shaped by a sweeping band -> an audible breath
     // that swells on the inhale and falls on the exhale (Open-style guide).
     const src = ctx.createBufferSource(); src.buffer = this._noise(); src.loop = true;
-    const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 800; bp.Q.value = 0.9;
-    const tame = ctx.createBiquadFilter(); tame.type = "lowpass"; tame.frequency.value = 3400; // cut harsh hiss
+    const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 130; // drop rumble
+    const bp = ctx.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 700; bp.Q.value = 0.6; // broad, airy
+    const tame = ctx.createBiquadFilter(); tame.type = "lowpass"; tame.frequency.value = 2100; // cut harsh hiss -> breathier
     const bg = ctx.createGain(); bg.gain.value = 0.0001;
-    src.connect(bp); bp.connect(tame); tame.connect(bg); bg.connect(this.master);
+    src.connect(hp); hp.connect(bp); bp.connect(tame); tame.connect(bg); bg.connect(this.master);
     const bsend = ctx.createGain(); bsend.gain.value = 0.25; bg.connect(bsend); bsend.connect(this.reverb);
     src.start();
     this.breathV = { src, filter: bp, gain: bg };
@@ -297,10 +298,17 @@ const Snd = {
       this.breathV = null;
     }
   },
-  _noise() {
+  _noise() { // pink noise — softer / airier / more breath-like than white
     if (this._nb) return this._nb;
     const ctx = this.ctx, len = Math.floor(ctx.sampleRate * 2), b = ctx.createBuffer(1, len, ctx.sampleRate), d = b.getChannelData(0);
-    for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    for (let i = 0; i < len; i++) {
+      const w = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + w * 0.0555179; b1 = 0.99332 * b1 + w * 0.0750759; b2 = 0.969 * b2 + w * 0.153852;
+      b3 = 0.8665 * b3 + w * 0.3104856; b4 = 0.55 * b4 + w * 0.5329522; b5 = -0.7616 * b5 - w * 0.016898;
+      d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11;
+      b6 = w * 0.115926;
+    }
     this._nb = b; return b;
   },
   // shape the breath voice over a phase: type = first word of the label, secs = duration
@@ -309,18 +317,18 @@ const Snd = {
     const t = this.ctx.currentTime, g = this.breathV.gain.gain, f = this.breathV.filter.frequency;
     const safe = Math.max(0.0001, g.value);
     try { g.cancelScheduledValues(t); f.cancelScheduledValues(t); g.setValueAtTime(safe, t); f.setValueAtTime(f.value, t); } catch {}
-    if (type === "Inhale") {                 // swell in, brighten
-      g.linearRampToValueAtTime(0.6, t + secs * 0.55);
-      g.linearRampToValueAtTime(0.08, t + secs);
-      f.setValueAtTime(560, t); f.exponentialRampToValueAtTime(1900, t + secs);
-    } else if (type === "Top-up") {          // quick bright sip
-      g.linearRampToValueAtTime(0.7, t + Math.min(0.28, secs * 0.45));
-      g.linearRampToValueAtTime(0.05, t + secs);
-      f.setValueAtTime(1500, t); f.exponentialRampToValueAtTime(2400, t + secs);
+    if (type === "Inhale") {                 // swell in, gently brighten (soft)
+      g.linearRampToValueAtTime(0.3, t + secs * 0.55);
+      g.linearRampToValueAtTime(0.04, t + secs);
+      f.setValueAtTime(480, t); f.exponentialRampToValueAtTime(1150, t + secs);
+    } else if (type === "Top-up") {          // quiet sip
+      g.linearRampToValueAtTime(0.36, t + Math.min(0.3, secs * 0.45));
+      g.linearRampToValueAtTime(0.03, t + secs);
+      f.setValueAtTime(1050, t); f.exponentialRampToValueAtTime(1500, t + secs);
     } else if (type === "Exhale") {          // long sighing release, darken
-      g.linearRampToValueAtTime(0.54, t + secs * 0.28);
+      g.linearRampToValueAtTime(0.27, t + secs * 0.28);
       g.linearRampToValueAtTime(0.0001, t + secs);
-      f.setValueAtTime(1300, t); f.exponentialRampToValueAtTime(360, t + secs);
+      f.setValueAtTime(900, t); f.exponentialRampToValueAtTime(300, t + secs);
     } else {                                 // Hold: breath suspended
       g.linearRampToValueAtTime(0.0001, t + Math.min(0.6, secs * 0.3));
     }
@@ -415,7 +423,7 @@ function Practice() {
     </div>
 
     <button class="hero" data-pick="${featured.id}">
-      <div class="hero__img" style="background-image:url('./assets/img/tyl-ambiance-moody.png')"></div>
+      <div class="hero__img" style="background-image:url('./assets/img/hero.jpg')"></div>
       <div class="hero__scrim"></div>
       <div class="hero__body">
         <span class="eyebrow eyebrow--rule hero__eyebrow">Recommended</span>
