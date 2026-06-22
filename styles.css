@@ -204,6 +204,8 @@ img { display: block; }
 .ct--next { color: rgba(243, 236, 227, 0.5); }
 .ct--on { color: var(--creme); }
 .ct--on::after { content: ""; position: absolute; left: 50%; bottom: -10px; transform: translateX(-50%); width: 4px; height: 4px; border-radius: 999px; background: var(--creme); }
+.ct--big { font-size: 1.8rem; font-family: var(--font-display); font-weight: 300; letter-spacing: 0.06em; }
+.ct--big::after { display: none; }
 
 .session__foot { z-index: 3; text-align: center; }
 .session__progress { width: 64%; max-width: 240px; height: 1.5px; margin: 0 auto var(--s4); background: rgba(243, 236, 227, 0.2); border-radius: 999px; overflow: hidden; }

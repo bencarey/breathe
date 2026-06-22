@@ -46,6 +46,14 @@ const ICONS = {
   breathoffire: M(`<path d="M24 37a8 8 0 0 0 8-8c0-6-5-8.5-5-14-3 2.5-4.5 5-4.5 8-2.2-.3-3-2-3-4.2-2.5 2.3-4 5.2-3.5 9.2a8 8 0 0 0 8 9z" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linejoin="round"/>`),
   // yogic ratio -> ascending bars (1:2:2)
   tripleratio: M(`<rect x="13" y="27" width="5" height="9" rx="1" fill="currentColor"/><rect x="21.5" y="18" width="5" height="18" rx="1" fill="currentColor"/><rect x="30" y="12" width="5" height="24" rx="1" fill="currentColor"/>`),
+  // wim hof -> snowflake (cold / power)
+  wimhof: M(`${Array.from({ length: 6 }, (_, i) => {
+    const a = i * Math.PI / 3, x = Math.cos(a) * 15, y = Math.sin(a) * 15;
+    const bx = 24 + Math.cos(a) * 9.5, by = 24 + Math.sin(a) * 9.5, t1 = a + 0.6, t2 = a - 0.6;
+    return `<line x1="24" y1="24" x2="${(24 + x).toFixed(1)}" y2="${(24 + y).toFixed(1)}" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>` +
+      `<line x1="${bx.toFixed(1)}" y1="${by.toFixed(1)}" x2="${(bx + Math.cos(t1) * 4).toFixed(1)}" y2="${(by + Math.sin(t1) * 4).toFixed(1)}" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>` +
+      `<line x1="${bx.toFixed(1)}" y1="${by.toFixed(1)}" x2="${(bx + Math.cos(t2) * 4).toFixed(1)}" y2="${(by + Math.sin(t2) * 4).toFixed(1)}" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>`;
+  }).join("")}`),
 };
 
 const ringsSVG = (stroke = "rgba(255,255,255,0.5)") => `
@@ -153,6 +161,21 @@ const PATTERNS = [
     desc: "A long humming exhale to quiet an anxious mind.",
     guidance: "Inhale softly through the nose, then hum like a bee on a long, smooth exhale with the mouth closed. Feel the gentle vibration in the head and chest.",
     phases: [["Inhale", 4], ["Exhale", 8]], unit: "breaths", options: [6, 10, 15], default: 10 },
+
+  { id: "wimhof", name: "Wim Hof", technique: "Power breathing", group: "energize", icon: "wimhof", color: "#4a5a66", rhythm: "30 breaths · hold",
+    desc: "Power breaths, a long empty-lung hold, then a recovery breath — energizing and intense.",
+    guidance: "Thirty full breaths — deep in, let the exhale fall away. After the last one, exhale and hold with empty lungs. When you need to, take a big recovery breath and hold it, then begin the next round.",
+    caveat: "Never practise in or near water, while driving, or standing — you can faint without warning. Avoid if pregnant, or with heart conditions, high blood pressure, or epilepsy. Sit or lie down.",
+    phases: (() => {
+      const ph = [];
+      for (let i = 0; i < 30; i++) { ph.push(["Inhale", 1.5]); ph.push(["Exhale", 1.5]); }
+      ph.push(["Hold (empty)", 60]);   // retention on empty lungs
+      ph.push(["Inhale", 2, 1]);       // recovery breath in
+      ph.push(["Hold (full)", 15]);    // hold the recovery breath
+      ph.push(["Exhale", 3]);          // release, then the next round begins
+      return ph;
+    })(),
+    unit: "rounds", options: [3, 4], default: 3 },
 ];
 const byId = (id) => PATTERNS.find((p) => p.id === id);
 
@@ -503,7 +526,7 @@ let sheetState = { patternId: null, value: null };
 function openSheet(patternId) {
   const p = byId(patternId);
   sheetState = { patternId, value: p.default };
-  const unitLabel = (v) => (p.unit === "breaths" ? "breaths" : "min");
+  const unitLabel = (v) => (p.unit === "min" ? "min" : p.unit);
 
   const scrim = h(`<div class="sheet-scrim">
     <div class="sheet" role="dialog" aria-modal="true" style="--c:${p.color}">
@@ -583,7 +606,7 @@ function startSession(patternId, value) {
   phases[0].from = phases[phases.length - 1].to; // seamless loop
   const cycleDur = phases.reduce((a, ph) => a + ph.secs, 0);
   const offs = []; { let a = 0; for (const ph of phases) { offs.push(a); a += ph.secs; } }
-  const totalSec = p.unit === "breaths" ? value * cycleDur : value * 60;
+  const totalSec = p.unit === "min" ? value * 60 : value * cycleDur; // 'breaths' & 'rounds' run that many cycles
 
   // build rings: outer faint+large -> inner bright+small; inner leads the ripple
   const ringMeta = [];
@@ -629,7 +652,7 @@ function startSession(patternId, value) {
   const pauseBtn = el.querySelector("[data-pause]");
   const ready = el.querySelector(".ready");
 
-  session = { finished: false, paused: false, t0: 0, pausedAccum: 0, pauseStart: 0, totalSec, tick: 0, cd: 0, lastKey: -1 };
+  session = { finished: false, paused: false, t0: 0, pausedAccum: 0, pauseStart: 0, totalSec, tick: 0, cd: 0, lastKey: -1, patternId };
 
   const elapsed = () => (performance.now() - session.t0 - session.pausedAccum) / 1000;
   const paint = (from, to, p01) => {
@@ -654,14 +677,18 @@ function startSession(patternId, value) {
     if (key !== session.lastKey) {       // crossed into a new phase
       session.lastKey = key;
       phaseEl.textContent = ph.label === "Top-up" ? "Top up" : ph.label;
-      ringsBox.classList.toggle("holding", ph.label === "Hold");
+      ringsBox.classList.toggle("holding", ph.from === ph.to); // any phase with no scale change is a hold
       Snd.breath(base, ph.secs);             // audible breath that follows the pace (in, out, sip, sigh)
       if (ph.secs >= 1.8) Snd.accent(base);  // soft chime/bowl on top (skip on very fast paces)
       haptic(1);
-      // build the count track for this phase — shows where you are and what's next
+      // build the count track for this phase — shows where you are and what's next.
+      // long holds (e.g. Wim Hof retention) use a single big countdown, not 60 pips.
       session.trackN = Math.max(1, Math.ceil(ph.secs - 0.001));
+      session.bigCount = ph.secs > 10;
       session.lastCount = -1;
-      trackEl.innerHTML = Array.from({ length: session.trackN }, (_, i) => `<span class="ct">${session.trackN - i}</span>`).join("");
+      trackEl.innerHTML = session.bigCount
+        ? `<span class="ct ct--on ct--big"></span>`
+        : Array.from({ length: session.trackN }, (_, i) => `<span class="ct">${session.trackN - i}</span>`).join("");
     }
     // motion — natural turnaround pauses, like true breath: a brief settle at the
     // top of the inhale (end-inspiratory pause) and a slightly longer one at the
@@ -676,8 +703,12 @@ function startSession(patternId, value) {
     const cur = Math.max(1, Math.ceil(ph.secs - into - 0.001));
     if (cur !== session.lastCount) {
       session.lastCount = cur;
-      const aidx = session.trackN - cur, kids = trackEl.children;
-      for (let i = 0; i < kids.length; i++) kids[i].className = "ct" + (i < aidx ? " ct--past" : i === aidx ? " ct--on" : " ct--next");
+      if (session.bigCount) {
+        trackEl.firstChild.textContent = cur;
+      } else {
+        const aidx = session.trackN - cur, kids = trackEl.children;
+        for (let i = 0; i < kids.length; i++) kids[i].className = "ct" + (i < aidx ? " ct--past" : i === aidx ? " ct--on" : " ct--next");
+      }
     }
     progEl.style.width = Math.min(100, (e / totalSec) * 100) + "%";
     timeEl.textContent = fmt(Math.max(0, totalSec - e));
@@ -724,7 +755,20 @@ function clearSession() {
   clearInterval(session.tick);
   clearInterval(session.cd);
 }
-function endSession(el) { clearSession(); Snd.stopAmbient(); exitFullscreen(); el.remove(); session = null; render(current); }
+function endSession(el) {
+  // log the actual time practiced, even if ended early, so Journey minutes aggregate
+  let secs = 0, pid = null;
+  if (session) {
+    pid = session.patternId;
+    if (session.t0) {
+      const now = session.paused ? session.pauseStart : performance.now();
+      secs = (now - session.t0 - session.pausedAccum) / 1000;
+    }
+  }
+  clearSession(); Snd.stopAmbient(); exitFullscreen();
+  if (pid && secs >= 10) store.log(pid, Math.round(secs)); // count meaningful partial practice
+  el.remove(); session = null; render(current);
+}
 
 function finishSession(el, p, totalSec) {
   clearSession();
