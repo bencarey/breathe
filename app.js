@@ -747,4 +747,6 @@ function finishSession(el, p, totalSec) {
 function fmt(sec) { sec = Math.max(0, Math.round(sec)); return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`; }
 
 /* ---------- boot ---------- */
+// ask the browser to keep our data (Journey/streaks) from being evicted
+try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch {}
 render("practice");
