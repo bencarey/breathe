@@ -402,7 +402,7 @@ function Practice() {
     ? `You're on a <b>${st.streak}-day</b> streak. Welcome back.`
     : "Come home to yourself. A few mindful breaths is all it takes.";
 
-  const groups = { energize: "Energize", center: "Center", soothe: "Soothe", rest: "Rest" };
+  const groups = { center: "Center", soothe: "Soothe", rest: "Rest", energize: "Energize" };
   const row = (p) => `<button class="prow" data-pick="${p.id}" style="--c:${p.color}">
       <span class="prow__rail">${ICONS[p.icon]}</span>
       <span class="prow__body">
